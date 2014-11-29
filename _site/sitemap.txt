@@ -1,6 +1,4 @@
 
-  /pages/about.html
-
   /pages/archive.html
 
   /pages/atom.xml
@@ -10,3 +8,11 @@
   /sitemap.txt
 
 
+
+  /2014/11/27/about-this-blog.html
+
+  /2014/11/27/about-linlinjava.html
+
+  /2014/11/27/about-disclaimer.html
+
+  /2014/11/27/about-blog-theme.html
