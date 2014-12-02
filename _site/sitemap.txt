@@ -9,6 +9,16 @@
 
 
 
+  /2014/12/01/perfect-personl-blogs.html
+
+  /2014/12/01/java.html
+
+  /2014/12/01/it-information.html
+
+  /2014/12/01/git-and-github.html
+
+  /2014/11/30/about-bookmarks.html
+
   /2014/11/27/about-this-blog.html
 
   /2014/11/27/about-linlinjava.html
