@@ -23,7 +23,7 @@ favicon: /public/img/gin_ta_ma.gif
 
 
 # 主题设置，自动激活某个标签
-active: 技术
+active: 关于
 
 # 首页除了最新文章外显示分类
 cates: 
