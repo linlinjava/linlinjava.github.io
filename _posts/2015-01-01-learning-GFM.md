@@ -6,6 +6,7 @@ description: markdown syntax
 ---
 
 本文翻译自:
+
 * <https://help.github.com/articles/markdown-basics/>
 * <https://help.github.com/articles/github-flavored-markdown/>
 * <https://help.github.com/articles/writing-on-github/>
@@ -161,7 +162,7 @@ SM会将每行开头包含四个空格的文本转换成代码块, 而GFM也支�
 
 	```
 	function test() {
-  	console.log("notice the blank line before this 		function?");
+  	console.log("notice the blank line before this function?");
 	}
 	```
 
@@ -232,4 +233,172 @@ SM会将每行开头包含四个空格的文本转换成代码块, 而GFM也支�
 
 [markup]: https://github.com/github/markup
 
+## 3. 精通Markdown
 
+Markdown是一种轻量且容易使用的语法, 用于GitHub平台所书写的所有类型.
+
+### 你将会学习到
+
+* Markdown格式是如何使协同编辑变得容易的.
+* Markdown是如何和传统的格式化方式不同的.
+* 如何使用Markdown格式化文本.
+* 如何利用GitHub的自动Markdown渲染.
+* 如何应用GitHub独有的Markdown扩展
+
+### 什么是Markdown?
+
+Markdown是一种在网络上组织文本的方式. 你可以控制文档的显示; 文字格式化成粗体或斜体, 添加图片和创建列表也是Markdown可以做到的一部分事情. 更多的是, Markdown仅仅只是包含了一些如`#`或`*`之类非字母字符的普通文本.
+
+你可以在GitHub的绝大多数地方使用Markdown:
+
+* Gists
+* 在Issues和Pull Requests里的评论
+* `.md`和`.markdown`后缀的文件
+
+### 示例
+
+https://guides.github.com/features/mastering-markdown/#examples
+
+### 语法指南
+
+以下是Markdown语法的简述, 你可以在GitHub.com或你自己的文本文件中使用.
+
+#### 标题
+
+	# This is an <h1> tag
+	## This is an <h2> tag
+	###### This is an <h6> tag
+
+#### 重点
+
+	*This text will be italic*
+	_This will also be italic_
+
+	\**This text will be bold**
+	\__This will also be bold__
+
+	*You **can** combine them*
+
+#### 无序列表
+
+	* Item 1
+	* Item 2
+	  * Item 2a
+	  * Item 2b
+
+#### 有序列表
+
+	1. Item 1
+	2. Item 2
+	3. Item 3
+	   * Item 3a
+	   * Item 3b
+
+#### 图片
+
+	\![GitHub Logo](/images/logo.png)
+	Format: \![Alt Text](url)
+
+#### 链接
+
+	http://github.com - automatic!
+	\[GitHub](http://github.com)
+
+#### 引用
+
+	As Kanye West said:
+
+	> We're living the future so
+	> the present is our past.
+
+#### 内联代码
+
+	I think you should use an
+	\`<addr>` element here instead.
+
+### GitHub Flavored Markdown
+
+GitHub.com使用自身版本的Markdown语法提供一些额外的有用功能, 这些可以使得在GitHub.com上更加容易写作.
+
+注意:GitHub Flavored Markdown的一些功能只能在Issues和Pull Requests的描述和评论中所使用. 这些包括@mentions, SHA-1哈希引用, Issues引用和Pull Requests引用.
+
+#### 语言高亮
+
+以下是你使用GFM进行语法高亮的一个示例:
+
+	```javascript
+	function fancyAlert(arg) {
+	  if(arg) {
+	    $.facebox({div:'#foo'})
+	  }
+	}
+	```
+
+你也可以仅仅简单地把你的代码缩进四个空格:
+
+	    function fancyAlert(arg) {
+	      if(arg) {
+	        $.facebox({div:'#foo'})
+	      }
+	    }
+
+以下是一个Python代码没有语法高亮的示例:
+
+def foo():
+    if not bar:
+        return True
+
+#### 任务列表
+
+	- [x] @mentions, #refs, [links](), \**formatting**, and <del>tags</del> supported
+	- [x] list syntax required (any unordered or ordered list supported)
+	- [x] this is a complete item
+	- [ ] this is an incomplete item
+
+#### 表格
+
+你可以用一个连字符`-`(用于第一行)来集合和分隔单词, 同时用一个管道字符`|`来隔离每一列,从而创建表格:
+
+	First Header | Second Header
+	------------ | -------------
+	Content from cell 1 | Content from cell 2
+	Content in the first column | Content in the second column
+
+First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
+
+#### SHA引用
+
+任何一个commit的SHA-1哈希值都会在GitHub上自动转化成一个指向commit的链接.
+
+	16c999e8c71134401a78d4d46435517b2271d6ac
+	mojombo@16c999e8c71134401a78d4d46435517b2271d6ac
+	mojombo/github-flavored-markdown@16c999e8c71134401a78d4d46435517b2271d6ac
+
+#### repository的Issue引用
+
+任何一个指向Issue或Pull Request的数字都会自动转化成一个链接.
+
+	#1
+	mojombo#1
+	mojombo/github-flavored-markdown#1
+
+#### @mentions
+
+输入`@`, 之后再输入一个用户名, 将会提醒那个人过来并查看评论. 这个称作"@mention", 因为你正在*提到*某人. 你也可以@mention一个组织的团队.
+
+#### 自动链接URL
+
+任何一个URL(如`http://www.github.com/`)都会自动转化成一个可以点击的链接.
+
+#### 删除线
+
+任何一个包含在两个波浪字符之间的单词(如`~~this~~`)将会被划掉.
+
+#### Emoji
+
+GitHub支持Emoji!:sparkles::camel::boom:
+
+请检验[Emoji Cheat Sheet](http://www.emoji-cheat-sheet.com/)来查看我们所支持的图片集合.
