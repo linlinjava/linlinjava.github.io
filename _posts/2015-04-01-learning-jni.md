@@ -7,8 +7,8 @@ description: Learning and Thinking in JNI
 
 # 声明
 
-1. 基于**工匠若水**的博客内容[NDK-JNI实战教程（二） JNI官方中文资料]; 而根据其声明, 其博客内容则引用了**Admire**的JNI完全手册.
-2. 同时基于最新官方[JNI本地接口(JNI)规范]英文原文跟新相关内容.
+1. 基于**工匠若水**的博客内容[NDK-JNI实战教程（二） JNI官方中文资料][1]; 而根据其声明, 其博客内容则引用了**Admire**的JNI完全手册.
+2. 同时基于最新官方[JNI本地接口(JNI)规范][2]英文原文跟新相关内容.
 
 [TOC]
 
@@ -19,32 +19,32 @@ JNI最重要的好处是，它没有限制Java虚拟机的实现. 因此，Java�
 
 本章涉及了以下内容:
 
-* Java本地接口概述
-* 历史背景
- * JDK 1.0本地方法接口
- * Java运行时接口
- * 原生本地接口和Java/COM接口
-* 目标
-* Java本地接口方案
-* JNI编程
-* 变更
++ Java本地接口概述
++ 历史背景
+    - JDK 1.0本地方法接口
+    - Java运行时接口
+    - 原生本地接口和Java/COM接口
++ 目标
++ Java本地接口方案
++ JNI编程
++ 变更
 
 ## 1.1 Java本地接口概述
 虽然你完全可以用Java编写应用程序, 但也存在一些情况仅仅Java并不能满足用户应用的需求. 程序员使用JNI编写Java本地方法来处理这些情况应用程序不能完全写在Java。
 
 下列例子阐述了用户需要使用Java本地方法的情况:
 
-* 标准Java类库不支持应用所需的平台依赖特性.
-* 用户已经用其他语言写了一个库, 因此希望能够通过JNI使得Java代码能够访问.
-* 用户希望利用汇编等低层次语言来实现一部分时间敏感的代码.
++ 标准Java类库不支持应用所需的平台依赖特性.
++ 用户已经用其他语言写了一个库, 因此希望能够通过JNI使得Java代码能够访问.
++ 用户希望利用汇编等低层次语言来实现一部分时间敏感的代码.
 
 通过JNI编程, 用户可以使用本地方法:
 
-* 创建, 检测和跟新Java对象(包括数组和字符串).
-* 调用Java方法.
-* 捕获和抛出异常.
-* 加载类和获取类信息.
-* 执行运行时类型检查
++ 创建, 检测和跟新Java对象(包括数组和字符串).
++ 调用Java方法.
++ 捕获和抛出异常.
++ 加载类和获取类信息.
++ 执行运行时类型检查
 
 用户还可以使用JNI的调用(Invocation)API来使得本地应用嵌入Java虚拟机. 这允许程序员很容易将他们已存在的应用Java化, 而不需要链接虚拟机源代码.
 
@@ -53,9 +53,9 @@ JNI最重要的好处是，它没有限制Java虚拟机的实现. 因此，Java�
 
 这里简要地研究了一些本地方法接口, 如:
 
-* JDK 1.0本地方法接口
-* Netscape的Java运行时接口
-* Microsoft的原生本地接口和Java/COM接口
++ JDK 1.0本地方法接口
++ Netscape的Java运行时接口
++ Microsoft的原生本地接口和Java/COM接口
 
 ### 1.2.1 JDK 1.0本地方法接口
 JDK 1.0包含了本地方法接口. 但遗憾的是, 存在两个原因使得该接口不适合被其他Java虚拟机所采用.
@@ -75,15 +75,15 @@ Microsoft的Java虚拟机支持双本地方法接口. 在底一层次, 它提供
 ### 2 目标
 我们相信一个统一的考虑周全的标准接口可以为每个人提供以下好处:
 
-* 每个虚拟机厂商可以支持更多的本地代码.
-* 工具构建者将需要维护不同类型的本地方法接口.
-* 应用开发者可以开发本地代码的一种版本, 即可使得该版本运行在不同虚拟机中.
++ 每个虚拟机厂商可以支持更多的本地代码.
++ 工具构建者将需要维护不同类型的本地方法接口.
++ 应用开发者可以开发本地代码的一种版本, 即可使得该版本运行在不同虚拟机中.
 
 实现标准本地方法接口的最佳途径是联合所有对Java虚拟机有兴趣的组织. 因此我们在Java许可持有者之间就统一本地方法接口的设计问题组织了一系列讨论. 从讨论中明确了标准本地方法接口必须满足以下要求:
 
-* 二进制兼容性 - 主要的目标是在给定平台上所有Java虚拟机实现之间的本地方法库的二进制兼容性. 对于给定平台, 程序员只需要维护他们本地方法库的一种版本. 
-* 效率 - 为了支持时间敏感的代码, 本地方法接口必须增加很少的系统开销. 所有已知的用于确保虚拟机独立性（因此具有二进制兼容性）的技术都会占用一定的系统开销. 我们必须在效率与虚拟机独立性之间进行某种折衷。 
-* 功能 - 接口必须暴露足够的Java虚拟机内部情况使得本地方法能够完成有用的任务.
++ 二进制兼容性 - 主要的目标是在给定平台上所有Java虚拟机实现之间的本地方法库的二进制兼容性. 对于给定平台, 程序员只需要维护他们本地方法库的一种版本. 
++ 效率 - 为了支持时间敏感的代码, 本地方法接口必须增加很少的系统开销. 所有已知的用于确保虚拟机独立性（因此具有二进制兼容性）的技术都会占用一定的系统开销. 我们必须在效率与虚拟机独立性之间进行某种折衷。 
++ 功能 - 接口必须暴露足够的Java虚拟机内部情况使得本地方法能够完成有用的任务.
 
 ### 3 Java本地接口方案
 我们希望采用一种已有的方案作为标准接口, 因为这可以使得不得不学习不同虚拟机间的多种接口的程序员工作负担最轻. 遗憾的是, 已有解决方案中没有任何方案能够完全满足我们的目标.
@@ -92,17 +92,17 @@ Netscape的JRI是最接近于我们所设想的可移植本地方法接口, 并�
 
 Microsoft的RNI是对JDK 1.0的改进, 因为它解决了使用非保守垃圾收集器的本地方法的问题. 然而, RNI不适合作为虚拟机独立的本地方法接口. 与JDK类似, RNI本地方法将Java对象作为C结构来访问, 导致两个问题:
 
-* RNI将内部Java对象的布局暴露给了本地代码.
-* 将Java对象作为C结构直接访问使得不可能有效地加入"写屏障", 而"写屏障"在高级垃圾回收算法中是必需的.
++ RNI将内部Java对象的布局暴露给了本地代码.
++ 将Java对象作为C结构直接访问使得不可能有效地加入"写屏障", 而"写屏障"在高级垃圾回收算法中是必需的.
 
 作为二进制标准, COM确保了不同虚拟机之间的完全二进制兼容性. 调用COM方法仅仅是非直接调用, 而这占用少量系统开销. 此外, COM对象对动态链接库的版本问题解决上也有很大的改进.
 
 然而, 有一些因素阻碍了将COM用作标准Java本地方法接口:
 
-* 第一, Java/COM接口缺少某些必需功能, 例如访问私有域和抛出普通异常.
-* 第二, Java/COM接口自动为Java对象提供标准IUnknown和IDispatch的COM 接口, 使得本地代码能够访问公有方法和域. 遗憾的是, IDispatch接口不能处理重载Java方法, 而且在匹配方法名称时是大小写不敏感的. 此外, 通过 IDispatch接口暴露的所有Java方法被打包来执行动态类型检查和强制转换. 这是因为IDispatch接口的设计只考虑了弱类型语言（例如 Basic）.
-* 第三, 相比处理单个低层次函数, COM允许软件组件（包括完全成熟的应用程序）一起工作. 我们认为将所有Java类或低层次本地方法都当作软件组件是不合适的. 
-* 第四, 由于缺少UNIX平台上的支持, 阻碍了直接采用COM.
++ 第一, Java/COM接口缺少某些必需功能, 例如访问私有域和抛出普通异常.
++ 第二, Java/COM接口自动为Java对象提供标准IUnknown和IDispatch的COM 接口, 使得本地代码能够访问公有方法和域. 遗憾的是, IDispatch接口不能处理重载Java方法, 而且在匹配方法名称时是大小写不敏感的. 此外, 通过 IDispatch接口暴露的所有Java方法被打包来执行动态类型检查和强制转换. 这是因为IDispatch接口的设计只考虑了弱类型语言（例如 Basic）.
++ 第三, 相比处理单个低层次函数, COM允许软件组件（包括完全成熟的应用程序）一起工作. 我们认为将所有Java类或低层次本地方法都当作软件组件是不合适的. 
++ 第四, 由于缺少UNIX平台上的支持, 阻碍了直接采用COM.
 
 虽然Java对象没有像COM对象一样暴露给本地代码, 但是JNI接口自身和COM是二进制兼容的. JNI使用与COM一样的跳转表和调用约定. 这意味着, 一旦具有对 COM的跨平台支持, JNI就能成为Java虚拟机的COM接口.
 
@@ -119,17 +119,17 @@ JNI不应该是给定Java虚拟机所支持的唯一本地方法接口. 标准�
 # 2. JNI设计概述
 本章涉及了以下内容:
 
-* JNI接口函数和指针
-* 编译, 加载和链接本地方法
- * 解析本地方法名称
- * 本地方法参数
-* 引用Java对象
- * 全局和局部引用
- * 实现局部引用
-* 访问Java对象
- * 访问
- * 访问域和方法
-* Java异常
++ JNI接口函数和指针
++ 编译, 加载和链接本地方法
+    + 解析本地方法名称
+    + 本地方法参数
++ 引用Java对象
+    + 全局和局部引用
+    + 实现局部引用
++ 访问Java对象
+    + 访问
+    + 访问域和方法
++ Java异常
 
 ## 2.1 JNI接口函数和指针
 
@@ -139,8 +139,8 @@ JNI不应该是给定Java虚拟机所支持的唯一本地方法接口. 标准�
 
 JNI接口的组织类似于C++虚拟函数表或COM接口. 使用接口表而不使用硬性编入的函数表的好处是使JNI名字空间与平台相关代码分开. 虚拟机可以很容易地提供多个版本的JNI函数表. 例如, 虚拟机可支持以下两个JNI函数表:
 
-* 一个表对非法参数进行全面检查, 适用于调试程序. 
-* 另一个表只进行JNI规范所要求的最小程度的检查, 因此效率较高. 
++ 一个表对非法参数进行全面检查, 适用于调试程序. 
++ 另一个表只进行JNI规范所要求的最小程度的检查, 因此效率较高. 
 	
 JNI接口指针只在当前线程中有效. 因此, 本地方法不能将接口指针从一个线程传递到另一个线程中. 实现JNI的虚拟机可将本地线程的数据分配和储存在JNI接口指针所指向的区域中.
 
@@ -188,11 +188,11 @@ class Cls {
 
 动态链接程序是根据项的名称来解析各项的. 本地方法名称由以下几部分串接而成:
 
-* 前缀 Java_
-* 全限定的类名
-* 下划线（“_”）分隔符
-* 方法名
-* 对于重载的本地方法, 加上两个下划线（“__”）, 后跟参数签名
++ 前缀 Java_
++ 全限定的类名
++ 下划线（“_”）分隔符
++ 方法名
++ 对于重载的本地方法, 加上两个下划线（“__”）, 后跟参数签名
 
 虚拟机将为本地库中的方法查找匹配的方法名. 它首先查找短名（没有参数签名的名称）, 然后再查找带参数签名的长名称. 只有当某个本地方法被另一个本地方法重载时程序员才有必要使用长名. 但如果本地方法的名称与非本地方法的名称相同, 则不会有问题. 因为非本地方法（Java方法）并不放在本地库中. 
 
@@ -286,9 +286,9 @@ JNI将平台相关代码使用的对象引用分成两类:局部引用和全局�
 
 大多数情况下, 程序员应该依靠虚拟机在本地方法返回后释放所有局部引用. 但是, 有时程序员必须显式释放某个局部引用. 例如, 考虑以下的情形:
 
-* 本地方法要访问一个大型Java对象, 于是创建了对该Java对象的局部引用. 然后, 本地方法要在返回调用程序之前执行其它计算. 对这个大型Java对象的局部引用将防止该对象被当作垃圾收集, 即使在剩余的运算中并不再需要该对象. 
++ 本地方法要访问一个大型Java对象, 于是创建了对该Java对象的局部引用. 然后, 本地方法要在返回调用程序之前执行其它计算. 对这个大型Java对象的局部引用将防止该对象被当作垃圾收集, 即使在剩余的运算中并不再需要该对象. 
 
-* 本地方法创建了大量的局部引用, 但这些局部引用并不是要同时使用. 由于虚拟机需要一定的空间来跟踪每个局部引用, 创建太多的局部引用将可能使系统耗尽内存.  例如, 本地方法要在一个大型对象数组中循环, 把取回的元素作为局部引用, 并在每次迭代时对一个元素进行操作. 每次迭代后, 程序员不再需要对该数组元素的局部引用. 
++ 本地方法创建了大量的局部引用, 但这些局部引用并不是要同时使用. 由于虚拟机需要一定的空间来跟踪每个局部引用, 创建太多的局部引用将可能使系统耗尽内存.  例如, 本地方法要在一个大型对象数组中循环, 把取回的元素作为局部引用, 并在每次迭代时对一个元素进行操作. 每次迭代后, 程序员不再需要对该数组元素的局部引用. 
 
 JNI允许程序员在本地方法内的任何地方对局部引用进行手工删除. 为确保程序员可以手工释放局部引用, JNI函数将不能创建额外的局部引用, 除非是这些JNI函数要作为结果返回的引用. 局部引用仅在创建它们的线程中有效. 本地方法不能将局部引用从一个线程传递到另一个线程中. 
 
@@ -312,8 +312,8 @@ JNI提供了一大批用来访问全局引用和局部引用的函数. 这意味
 
 一个解决办法是引入“钉住”概念, 以使本地方法能够要求虚拟机钉住数组内容. 而后, 该本地方法将接受指向数值元素的直接指针. 但是, 这种方法包含以下两个前提:
 
-* 垃圾收集器必须支持钉住. 
-* 虚拟机必须在内存中连续存放基本类型数组. 虽然大多数基本类型数组都是连续存放的, 但布尔数组可以压缩或不压缩存储. 因此, 依赖于布尔数组确切存储方式的本地方法将是不可移植的. 
++ 垃圾收集器必须支持钉住. 
++ 虚拟机必须在内存中连续存放基本类型数组. 虽然大多数基本类型数组都是连续存放的, 但布尔数组可以压缩或不压缩存储. 因此, 依赖于布尔数组确切存储方式的本地方法将是不可移植的. 
 
 我们将采取折衷方法来克服上述两个问题. 
 
@@ -321,8 +321,8 @@ JNI提供了一大批用来访问全局引用和局部引用的函数. 这意味
 
 其次, 程序员可用另一套函数来取回数组元素的受约束版本. 记住, 这些函数可能要求Java虚拟机分配存储空间和进行复制. 虚拟机实现将决定这些函数是否真正复制该数组, 如下所示:
 
-* 如果垃圾收集器支持钉住, 且数组的布局符合本地方法的要求, 则不需要进行复制. 
-* 否则, 该数组将被复制到不可移动的内存块中（例如, 复制到C堆中）, 并进行必要的格式转换, 然后返回指向该副本的指针. 
++ 如果垃圾收集器支持钉住, 且数组的布局符合本地方法的要求, 则不需要进行复制. 
++ 否则, 该数组将被复制到不可移动的内存块中（例如, 复制到C堆中）, 并进行必要的格式转换, 然后返回指向该副本的指针. 
 
 最后, 接口提供了一些函数, 用以通知虚拟机本地方法已不再需要访问这些数组元素. 当调用这些函数时, 系统或者释放数组, 或者在原始数组与其不可移动副本之间进行协调并将副本释放. 
 
@@ -346,8 +346,8 @@ jdouble result = env->CallDoubleMethod(obj, mid, 10, str);
 
 域ID或方法ID并不能防止虚拟机卸载生成该ID的类. 该类被卸载之后, 该方法ID或域ID亦变成无效. 因此, 如果平台相关代码要长时间使用某个方法ID或域ID, 则它必须确保:
 
-* 保留对所涉及类的活引用, 
-* 或重新计算该方法ID或域ID. 
++ 保留对所涉及类的活引用, 
++ 或重新计算该方法ID或域ID. 
 
 JNI对域ID和方法ID的内部实现并不施加任何限制. 
 
@@ -355,8 +355,8 @@ JNI对域ID和方法ID的内部实现并不施加任何限制.
 
 JNI不检查诸如传递NULL指针或非法参数类型之类的编程错误. 非法的参数类型包括诸如要用Java类对象时却用了普通Java对象这样的错误. JNI不检查这些编程错误的理由如下:
 
-* 强迫JNI函数去检查所有可能的错误情况将降低正常（正确）的本地方法的性能. 
-* 在许多情况下, 没有足够的运行时的类型信息可供这种检查使用. 
++ 强迫JNI函数去检查所有可能的错误情况将降低正常（正确）的本地方法的性能. 
++ 在许多情况下, 没有足够的运行时的类型信息可供这种检查使用. 
 
 大多数C库函数对编程错误不进行防范. 例如, `printf`函数在接到一个无效地址时通常是引起运行错而不是返回错误代码. 强迫C库函数检查所有可能的错误情况将有可能引起这种检查被重复进行--先是在用户代码中进行, 然后又在库函数中再次进行. 
 
@@ -370,13 +370,13 @@ JNI允许本地方法抛出任何Java异常. 本地方法也可以处理突出�
 
 一些JNI函数使用Java异常机制来报告错误情况. 大多数情况下, JNI函数通过返回错误代码并抛出Java异常来报告错误情况. 错误代码通常是特殊的返回值（如 NULL）, 这种特殊的返回值在正常返回值范围之外. 因此, 程序员可以:
 
-* 快速检查上一个JNI调用所返回的值以确定是否出错, 
-* 并通过调用函数`ExceptionOccurred`来获得异常对象, 它含有对错误情况的更详细说明. 
++ 快速检查上一个JNI调用所返回的值以确定是否出错, 
++ 并通过调用函数`ExceptionOccurred`来获得异常对象, 它含有对错误情况的更详细说明. 
 
 在以下两种情况中, 程序员需要先查出异常, 然后才能检查错误代码:
 
-* 调用Java方法的JNI函数返回该Java方法的结果. 程序员必须调用`ExceptionOccurred` 以检查在执行Java方法期间可能发生的异常. 
-* 某些用于访问JNI数组的函数并不返回错误代码, 但可能会抛出`ArrayIndexOutOfBoundsException`或`ArrayStoreException`. 
++ 调用Java方法的JNI函数返回该Java方法的结果. 程序员必须调用`ExceptionOccurred` 以检查在执行Java方法期间可能发生的异常. 
++ 某些用于访问JNI数组的函数并不返回错误代码, 但可能会抛出`ArrayIndexOutOfBoundsException`或`ArrayStoreException`. 
 
 在所有其它情况下, 返回值如果不是错误代码值就可确保没有抛出异常. 
 
@@ -384,8 +384,8 @@ JNI允许本地方法抛出任何Java异常. 本地方法也可以处理突出�
 
 在多个线程的情况下, 当前线程以外的其它线程可能会抛出异步异常. 异步异常并不立即影响当前线程中平台相关代码的执行, 直到出现下列情况:
 
-* 该平台相关代码调用某个有可能抛出同步异常的JNI函数, 
-* 或者该平台相关代码用 `ExceptionOccurred`显式检查同步异常或异步异常. 
++ 该平台相关代码调用某个有可能抛出同步异常的JNI函数, 
++ 或者该平台相关代码用 `ExceptionOccurred`显式检查同步异常或异步异常. 
 
 注意, 只有那些有可能抛出同步异常的JNI函数才检查异步异常. 
 
@@ -395,8 +395,8 @@ JNI允许本地方法抛出任何Java异常. 本地方法也可以处理突出�
 
 可用两种方法来处理平台相关代码中的异常:
 
-* 本地方法可选择立即返回, 使异常在启动该本地方法调用的Java代码中抛出. 
-* 平台相关代码可通过调用`ExceptionClear`来清除异常, 然后执行自己的异常处理代码. 
++ 本地方法可选择立即返回, 使异常在启动该本地方法调用的Java代码中抛出. 
++ 平台相关代码可通过调用`ExceptionClear`来清除异常, 然后执行自己的异常处理代码. 
 
 抛出了某个异常之后, 平台相关代码必须先清除异常, 然后才能进行其它的JNI调用. 当有待定异常时, 只有以下这些JNI函数可被安全地调用:
 
@@ -455,20 +455,20 @@ jsize整数类型用于描述主要指数和大小:
 
 JNI包含了很多对应于不同Java对象的引用类型. JNI引用类型的组织层次如图所示:
 
-* jobject
-   * jclass (java.lang.Class objects)
-   * jstring (java.lang.String objects)
-   * jarray (arrays)
-      * jobjectArray (object arrays)
-      * jbooleanArray (boolean arrays)
-      * jbyteArray (byte arrays)
-      * jcharArray (char arrays)
-      * jshortArray (short arrays)
-      * jintArray (int arrays)
-      * jlongArray (long arrays)
-      * jfloatArray (float arrays)
-      * jdoubleArray (double arrays)
-   * jthrowable (java.lang.Throwable objects)
++ jobject
+    + jclass (java.lang.Class objects)
+    + jstring (java.lang.String objects)
+    + jarray (arrays)
+        + jobjectArray (object arrays)
+        + jbooleanArray (boolean arrays)
+        + jbyteArray (byte arrays)
+        + jcharArray (char arrays)
+        + jshortArray (short arrays)
+        + jintArray (int arrays)
+        + jlongArray (long arrays)
+        + jfloatArray (float arrays)
+        + jdoubleArray (double arrays)
+    + jthrowable (java.lang.Throwable objects)
 
 
 在C中, 所有其它JNI引用类型都被定义为与jobject一样. 例如:
@@ -534,6 +534,7 @@ JNI使用Java虚拟机的类型签名表述. 下表列出了这些类型签名:
 | [ type | type[] |
 | ( arg-types ) ret-type | 方法类型 |
 
+
 例如, Java方法:
 
 ```
@@ -552,33 +553,33 @@ JNI采用改进型UTF-8字符串来表示各种字符串类型. 改进型UTF-8�
 
 所有在\u0001到\u007F范围内的字符都用单字节表示, 如下所示:
 	
-* 0xxxxxxx
++ 0xxxxxxx
 	
 字节中的七位数据确定了所表示字符的值. 
 
 空字符 (\u0000)和\u0080到\u07FF范围内的字符用一对字节表示,  即x和y, 如下所示:
 
-* x: 110xxxxx
-* y: 10yyyyyy
++ x: 110xxxxx
++ y: 10yyyyyy
 
 值为((x&0x1f)<<6)+(y&0x3f)的字符需用两个字节表示. 
 
 \u0800到\uFFFF范围内的字符用三个字节表示, 即x, y和z:
 
-* x: 1110xxxx
-* y: 10yyyyyy
-* z: 10zzzzzz
++ x: 1110xxxx
++ y: 10yyyyyy
++ z: 10zzzzzz
 
 值为((x&0xf)<<12)+(y&0x3f)<<6)+(z&0x3f)的字符需用三个字节表示. 
 
 代码点U+FFFF之上的字符（所谓的补充字符）通过两个UTF-16编码的代理代码单元来表示. 每一个代理代码单元都有三个字节表示. 这意味着, 补充字符是由六个字节表示, 即u,v,w,x,y和z:
 
-* u: 11101101
-* v: 1010vvvv
-* w: 10wwwwww
-* x: 11101101
-* y: 1011yyyy
-* z: 10zzzzzz
++ u: 11101101
++ v: 1010vvvv
++ w: 10wwwwww
++ x: 11101101
++ y: 1011yyyy
++ z: 10zzzzzz
 
 值为0x10000+((v&0x0f)<<16)+((w&0x3f)<<10)+(y&0x0f)<<6)+(z&0x3f) 的字符需要六个字节表示.
 
@@ -597,100 +598,100 @@ JNI采用改进型UTF-8字符串来表示各种字符串类型. 改进型UTF-8�
 
 本章的部分资料改编自Netscape的JRI文档. 该参考资料按用法对函数进行组织. 
 
-参考材料按照函数用法分组. 参考章节以以下方式组织:
+参考材料按照函数用法分组. 参考章节如下列所示:
 
-* Interface Function Table
-* Version Information
-   * GetVersion
-   * Constants
-* Class Operations
-   * DefineClass
-   * FindClass
-   * GetSuperclass
-   * IsAssignableFrom
-* Exceptions
-   * Throw
-   * ThrowNew
-   * ExceptionOccurred
-   * ExceptionDescribe
-   * ExceptionClear
-   * FatalError
-   * ExceptionCheck
-* Global and Local References
-   * Global References
-   * NewGlobalRef
-   * DeleteGlobalRef
-   * Local References
-   * DeleteLocalRef
-   * EnsureLocalCapacity
-   * PushLocalFrame
-   * PopLocalFrame
-   * NewLocalRef
-* Weak Global References
-   * NewWeakGlobalRef
-   * DeleteWeakGlobalRef
-* Object Operations
-   * AllocObject
-   * NewObject, NewObjectA, NewObjectV
-   * GetObjectClass
-   * GetObjectRefType
-   * IsInstanceOf
-   * IsSameObject
-* Accessing Fields of Objects
-   * GetFieldID
-   * Get<type>Field Routines
-   * Set<type>Field Routines
-* Calling Instance Methods
-   * GetMethodID
-   * Call<type>Method Routines, Call<type>MethodA Routines, Call<type>MethodV Routines
-   * CallNonvirtual<type>Method Routines, CallNonvirtual<type>MethodA Routines, CallNonvirtual<type>MethodV Routines
-* Accessing Static Fields
-   * GetStaticFieldID
-   * GetStatic<type>Field Routines
-   * SetStatic<type>Field Routines
-* Calling Static Methods
-   * GetStaticMethodID
-   * CallStatic<type>Method Routines, CallStatic<type>MethodA Routines, CallStatic<type>MethodV Routines
-* String Operations
-   * NewString
-   * GetStringLength
-   * GetStringChars
-   * ReleaseStringChars
-   * NewStringUTF
-   * GetStringUTFLength
-   * GetStringUTFChars
-   * ReleaseStringUTFChars
-   * GetStringRegion
-   * GetStringUTFRegion
-   * GetStringCritical, ReleaseStringCritical
-* Array Operations
-   * GetArrayLength
-   * NewObjectArray
-   * GetObjectArrayElement
-   * SetObjectArrayElement
-   * New<PrimitiveType>Array Routines
-   * Get<PrimitiveType>ArrayElements Routines
-   * Release<PrimitiveType>ArrayElements Routines
-   * Get<PrimitiveType>ArrayRegion Routines
-   * Set<PrimitiveType>ArrayRegion Routines
-   * GetPrimitiveArrayCritical, ReleasePrimitiveArrayCritical
-* Registering Native Methods
-   * RegisterNatives
-   * UnregisterNatives
-* Monitor Operations
-   * MonitorEnter
-   * MonitorExit
-* NIO Support
-   * NewDirectByteBuffer
-   * GetDirectBufferAddress
-   * GetDirectBufferCapacity
-* Reflection Support
-   * FromReflectedMethod
-   * FromReflectedField
-   * ToReflectedMethod
-   * ToReflectedField
-* Java VM Interface
-   * GetJavaVM
++ 接口函数表
++ 版本信息
+    + GetVersion
+    + Constants
++ 类操作
+    + DefineClass
+    + FindClass
+    + GetSuperclass
+    + IsAssignableFrom
++ 异常
+    + Throw
+    + ThrowNew
+    + ExceptionOccurred
+    + ExceptionDescribe
+    + ExceptionClear
+    + FatalError
+    + ExceptionCheck
++ 全局和局部引用
+    + Global References
+    + NewGlobalRef
+    + DeleteGlobalRef
+    + Local References
+    + DeleteLocalRef
+    + EnsureLocalCapacity
+    + PushLocalFrame
+    + PopLocalFrame
+    + NewLocalRef
++ 弱全局引用
+    + NewWeakGlobalRef
+    + DeleteWeakGlobalRef
++ 类操作
+    + AllocObject
+    + NewObject, NewObjectA, NewObjectV
+    + GetObjectClass
+    + GetObjectRefType
+    + IsInstanceOf
+    + IsSameObject
++ 访问对象域
+    + GetFieldID
+    + `Get<type>Field`例程
+    + `Set<type>Field`例程
++ 调用实例方法
+    + GetMethodID
+    + `Call<type>Method`例程, `Call<type>MethodA`例程, `Call<type>MethodV`例程
+    + `CallNonvirtual<type>Method`例程, `CallNonvirtual<type>MethodA`例程, `CallNonvirtual<type>MethodV`例程
++ 访问静态域
+    + GetStaticFieldID
+    + `GetStatic<type>Field`例程
+    + `SetStatic<type>Field`例程
++ 调用静态方法
+    + GetStaticMethodID
+    + `CallStatic<type>Method`例程, `CallStatic<type>MethodA`例程, `CallStatic<type>MethodV`例程
++ 字符串操作
+    + NewString
+    + GetStringLength
+    + GetStringChars
+    + ReleaseStringChars
+    + NewStringUTF
+    + GetStringUTFLength
+    + GetStringUTFChars
+    + ReleaseStringUTFChars
+    + GetStringRegion
+    + GetStringUTFRegion
+    + GetStringCritical, ReleaseStringCritical
++ 数组操作
+    + GetArrayLength
+    + NewObjectArray
+    + GetObjectArrayElement
+    + SetObjectArrayElement
+    + `New<PrimitiveType>Array`例程
+    + `Get<PrimitiveType>ArrayElements`例程
+    + `Release<PrimitiveType>ArrayElements`例程
+    + `Get<PrimitiveType>ArrayRegion`例程
+    + `Set<PrimitiveType>ArrayRegion`例程
+    + GetPrimitiveArrayCritical, ReleasePrimitiveArrayCritical
++ 注册本地方法
+    + RegisterNatives
+    + UnregisterNatives
++ 监控器操作
+    + MonitorEnter
+    + MonitorExit
++ NIO支持
+    + NewDirectByteBuffer
+    + GetDirectBufferAddress
+    + GetDirectBufferCapacity
++ 反射支持
+    + FromReflectedMethod
+    + FromReflectedField
+    + ToReflectedMethod
+    + ToReflectedField
++ Java虚拟机接口
+    + GetJavaVM
 
 ## 4.1 接口函数表
 
@@ -987,7 +988,7 @@ env:JNI接口指针.
 
 /* Error codes */
 #define JNI_EDETACHED    (-2)              /* thread detached from the VM */
-#define JNI_EVERSION     (-3)              /* JNI version error 
+#define JNI_EVERSION     (-3)              /* JNI version error */
 ```
 
 #### SINCE JDK/JRE 1.4:
@@ -1005,11 +1006,11 @@ env:JNI接口指针.
 ## 4.3 类操作
 
 ### 4.3.1 DefineClass
-从原始类数据的缓冲区中加载类. 当DefineClass调用返回后,包含原始类数据的缓冲区不会被虚拟机引用, 而且如果需要它可能会被放弃.
 
 ```
 jclass DefineClass(JNIEnv *env, const char *name, jobject loader, const jbyte *buf, jsize bufLen); 
 ```
+从原始类数据的缓冲区中加载类. 当DefineClass调用返回后,包含原始类数据的缓冲区不会被虚拟机引用, 而且如果需要它可能会被放弃.
 
 #### 关联
 JNIEnv接口函数表的项5
@@ -1131,7 +1132,7 @@ env:JNI接口指针.
 obj:java.lang.Throwable对象. 
 	
 #### 返回值
-成功时返回0, 失败时返回负数. 
+成功时返回JNI_OK, 失败时返回负数. 
 	
 #### 抛出
 java.lang.Throwable对象obj. 
@@ -1606,11 +1607,11 @@ ref2:Java对象.
 jfieldID GetFieldID(JNIEnv *env, jclass clazz, const char *name, const char *sig); 
 ```
 
-返回类的实例（非静态）域的域ID. 该域由其名称及签名指定. 访问器函数的Get<type>Field及Set<type>Field系列使用域ID检索对象域. 
+返回类的实例（非静态）域的域ID. 该域由其名称及签名指定. 访问器函数的`Get<type>Field`及`Set<type>Field`系列使用域ID检索对象域. 
 
-GetFieldID()将未初始化的类初始化. 
+`GetFieldID`将未初始化的类初始化. 
 
-GetFieldID()不能用于获取数组的长度域. 应使用GetArrayLength(). 
+`GetFieldID`不能用于获取数组的长度域. 应使用`GetArrayLength`.
 
 #### 关联
 JNIEnv接口函数表的项94
@@ -1629,17 +1630,17 @@ NoSuchFieldError:如果找不到指定的域.
 ExceptionInInitializerError:如果由于异常而导致类初始化程序失败. 
 OutOfMemoryError:如果系统内存不足. 
 
-### 4.7.2 Get<type>Field例程
+### 4.7.2 `Get<type>Field`例程
 
 ```
 NativeType Get<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID); 
 ```
 
-该访问器例程系列返回对象的实例（非静态）域的值. 要访问的域由通过调用GetFieldID()而得到的域ID指定. 
+该访问器例程系列返回对象的实例（非静态）域的值. 要访问的域由通过调用`GetFieldID`而得到的域ID指定. 
 
-下表说明了Get<type>Field例程名及结果类型. 应将Get<type>Field中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
+下表说明了`Get<type>`Field例程名及结果类型. 应将`Get<type>Field`中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
 
-| **Get<type>Field例程名** | **本地类型** |
+| **`Get<type>Field`例程名** | **本地类型** |
 | ------------------------ | ------------ |
 | GetObjectField() | jobject |
 | GetBooleanField() | jboolean |
@@ -1654,7 +1655,7 @@ NativeType Get<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID);
 #### 关联
 JNIEnv接口函数表的项
 
-| **Get<type>Field例程名** | **项** |
+| **`Get<type>Field`例程名** | **项** |
 | ------------------------ | ------ |
 | GetObjectField() | 95 |
 | GetBooleanField() | 96 |
@@ -1674,17 +1675,17 @@ fieldID:有效的域ID.
 #### 返回值
 域的内容. 
 	
-### 4.7.3 Set<type>Field例程
+### 4.7.3 `Set<type>Field`例程
 
 ```
 void Set<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID, NativeType value); 
 ```
 
-该访问器例程系列设置对象的实例（非静态）域的值. 要访问的域由通过调用SetFieldID()而得到的域ID指定. 
+该访问器例程系列设置对象的实例（非静态）域的值. 要访问的域由通过调用`SetFieldID`而得到的域ID指定. 
 
-下表说明了Set<type>Field例程名及结果类型. 应将Set<type>Field中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
+下表说明了`Set<type>Field`例程名及结果类型. 应将`Set<type>Field`中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
 
-| **Set<type>Field例程名** | **本地类型** |
+| **`Set<type>Field`例程名** | **本地类型** |
 | ------------------------ | ------------ |
 | SetObjectField() | jobject |
 | SetBooleanField() | jboolean |
@@ -1699,7 +1700,7 @@ void Set<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID, NativeType value
 #### 关联
 JNIEnv接口函数表的项
 
-| **Get<type>Field例程名** | **项** |
+| **`Get<type>Field`例程名** | **项** |
 | ------------------------ | ------ |
 | GetObjectField() | 104 |
 | GetBooleanField() | 105 |
@@ -1748,7 +1749,7 @@ NoSuchMethodError:如果找不到指定方法.
 ExceptionInInitializerError:如果由于异常而导致类初始化程序失败. 
 OutOfMemoryError:如果系统内存不足. 
 
-### 4.8.2 Call<type>Method, Call<type>MethodA, Call<type>MethodV例程
+### 4.8.2 `Call<type>Method`, `Call<type>MethodA`, `Call<type>MethodV`例程
 
 ```
 NativeType Call<type>Method(JNIEnv *env, jobject obj, jmethodID methodID, ...); 
@@ -1758,22 +1759,22 @@ NativeType Call<type>MethodV(JNIEnv *env, jobject obj, jmethodID methodID, va_li
 
 这三个操作的方法用于从本地方法调用Java实例方法. 它们的差别仅在于向其所调用的方法传递参数时所用的机制. 
 
-这三个操作将根据所指定的方法ID调用Java对象的实例（非静态）方法. 参数methodID必须通过调用GetMethodID()来获得.
+这三个操作将根据所指定的方法ID调用Java对象的实例（非静态）方法. 参数methodID必须通过调用`GetMethodID`来获得.
 
 当这些函数用于调用私有方法和构造函数时, 方法ID必须从obj的真实类派生而来, 而不应从其某个超类派生. 
 
-#### Call<type>Method例程
+#### `Call<type>Method`例程
 程序员应将要传给方法的所有参数紧跟着放在methodID参数之后. Call<type>Method例程接受这些参数并将其传给程序员所要调用的Java方法. 
 
-#### Call<type>MethodA例程
-程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. Call<type>MethodA routine接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
+#### `Call<type>MethodA`例程
+程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. `Call<type>MethodA`例程接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
 
-#### Call<type>MethodV例程
-程序员将方法的所有参数放在紧跟着在methodID参数之后的va_list类型参数变量中. Call<type>MethodV例程接受这些参数并将其传给程序员所要调用的Java方法. 
+#### `Call<type>MethodV`例程
+程序员将方法的所有参数放在紧跟着在methodID参数之后的va_list类型参数变量中. `Call<type>MethodV`例程接受这些参数并将其传给程序员所要调用的Java方法. 
 
-下表根据结果类型说明了各个方法调用例程. 用户应将Call<type>Method中的type替换为所调用方法的Java类型（或使用表中的实际方法调用例程名）, 同时将NativeType替换为该例程相应的本地类型. 
+下表根据结果类型说明了各个方法调用例程. 用户应将`Call<type>Method`中的type替换为所调用方法的Java类型（或使用表中的实际方法调用例程名）, 同时将NativeType替换为该例程相应的本地类型. 
 
-| **Call<type>Method例程名** | **本地类型** |
+| **`Call<type>Method`例程名** | **本地类型** |
 | -------------------------- | ------------ |
 | CallVoidMethod() CallVoidMethodA() CallVoidMethodV() | void |
 | CallObjectMethod() CallObjectMethodA() CallObjectMethodV() | jobject |
@@ -1789,7 +1790,7 @@ NativeType Call<type>MethodV(JNIEnv *env, jobject obj, jmethodID methodID, va_li
 #### 关联
 JNIEnv接口函数表的项
 
-| **Call<type>Method例程名** | **项** |
+| **`Call<type>Method`例程名** | **项** |
 | -------------------------- | ------ |
 | CallVoidMethod() CallVoidMethodA() CallVoidMethodV() | 61 63 62 |
 | CallObjectMethod() CallObjectMethodA() CallObjectMethodV() | 34 36 35 |
@@ -1807,13 +1808,13 @@ env:JNI接口指针.
 obj:Java对象. 
 methodID:方法ID. 
 	
-#### Call<type>Method例程的其它参数
+#### `Call<type>Method`例程的其它参数
 要传给Java方法的参数. 
 	
-#### Call<type>MethodA例程的其它参数
+#### `Call<type>MethodA`例程的其它参数
 args:参数数组. 
 	
-#### Call<type>MethodV例程的其它参数
+#### `Call<type>MethodV`例程的其它参数
 args:参数的va_list. 
 
 #### 返回值
@@ -1822,7 +1823,7 @@ args:参数的va_list.
 #### 抛出
 执行Java方法时抛出的异常. 
 	
-### 4.8.3 CallNonvirtual<type>Method, CallNonvirtual<type>MethodA, CallNonvirtual<type>MethodV例程
+### 4.8.3 `CallNonvirtual<type>Method`, `CallNonvirtual<type>MethodA`, `CallNonvirtual<type>MethodV`例程
 
 ```
 NativeType CallNonvirtual<type>Method(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, ...); 
@@ -1830,23 +1831,23 @@ NativeType CallNonvirtual<type>MethodA(JNIEnv *env, jobject obj, jclass clazz, j
 NativeType CallNonvirtual<type>MethodV(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, va_list args); 
 ```
 
-这些操作根据指定的类和方法ID调用某Java对象的实例（非静态）方法. 参数methodID必须通过调用clazz类的GetMethodID()获得. 
+这些操作根据指定的类和方法ID调用某Java对象的实例（非静态）方法. 参数methodID必须通过调用clazz类的`GetMethodID`获得. 
 
-CallNonvirtual<type>Method和Call<type>Method例程系列并不相同. Call<type>Method例程根据对象的类调用方法, 而CallNonvirtual<type>Method例程则根据获得方法ID的（由clazz参数指定）类调用方法. 方法ID必须从对象的真实类或其某个超类获得. 
+`CallNonvirtual<type>Method`和`Call<type>Method`例程系列并不相同. `Call<type>Method`例程根据对象的类调用方法, 而`CallNonvirtual<type>Method`例程则根据获得方法ID的（由clazz参数指定）类调用方法. 方法ID必须从对象的真实类或其某个超类获得. 
 
-#### CallNonvirtual<type>Method例程
-程序员应将要传给方法的所有参数紧跟着放在methodID参数之后. CallNonvirtual<type>Method routine接受这些参数并将其传给编程人员所要调用的Java方法. 
+#### `CallNonvirtual<type>Method`例程
+程序员应将要传给方法的所有参数紧跟着放在methodID参数之后. `CallNonvirtual<type>Method`例程接受这些参数并将其传给编程人员所要调用的Java方法. 
 
-#### CallNonvirtual<type>MethodA例程
-程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. CallNonvirtual<type>MethodA routine接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
+#### `CallNonvirtual<type>MethodA`例程
+程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. `allNonvirtual<type>MethodA`例程接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
 
 #### CallNonvirtual<type>MethodV例程
-程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的va_list类型参数args中. CallNonvirtualMethodV routine接受这些参数并将其传给程序员所要调用的Java方法. 
+程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的va_list类型参数args中. `CallNonvirtualMethodV`例程接受这些参数并将其传给程序员所要调用的Java方法. 
 
-下表根据结果类型说明了各个方法调用例程. 用户应将CallNonvirtual<type>Method中的type替换为所调用方法的Java类型（或使用
+下表根据结果类型说明了各个方法调用例程. 用户应将`CallNonvirtual<type>Method`中的type替换为所调用方法的Java类型（或使用
 表中的实际方法调用例程名）, 同时将NativeType替换为该例程相应的本地类型. 
 
-| **CallNonvirtual<type>Method例程名** | **本地类型** |
+| **`CallNonvirtual<type>Method`例程名** | **本地类型** |
 | ------------------------------------ | ------------ |
 | CallNonvirtualVoidMethod() CallNonvirtualVoidMethodA() CallNonvirtualVoidMethodV() | void |
 | CallNonvirtualObjectMethod() CallNonvirtualObjectMethodA() CallNonvirtualObjectMethodV() | jobject |
@@ -1862,7 +1863,7 @@ CallNonvirtual<type>Method和Call<type>Method例程系列并不相同. Call<type
 #### 关联
 JNIEnv接口函数表的项
 
-| **CallNonvirtual<type>Method例程名** | **项** |
+| **`CallNonvirtual<type>Method`例程名** | **项** |
 | ------------------------------------ | ------ |
 | CallNonvirtualVoidMethod() CallNonvirtualVoidMethodA() CallNonvirtualVoidMethodV() | 91 93 92 |
 | CallNonvirtualObjectMethod() CallNonvirtualObjectMethodA() CallNonvirtualObjectMethodV() | 64 66 65 |
@@ -1881,13 +1882,13 @@ clazz:Java类.
 obj: Java对象. 
 methodID:方法ID. 
 	
-#### CallNonvirtual<type>Method例程的其它参数
+#### `CallNonvirtual<type>Method`例程的其它参数
 要传给Java方法的参数. 
 	
-#### CallNonvirtual<type>MethodA例程的其它参数
+#### `CallNonvirtual<type>MethodA`例程的其它参数
 args:参数数组. 
 	
-#### CallNonvirtual<type>MethodV例程的其它参数
+#### `CallNonvirtual<type>MethodV`例程的其它参数
 args:参数的va_list. 
 	
 #### 返回值
@@ -1904,9 +1905,9 @@ args:参数的va_list.
 jfieldID GetStaticFieldID(JNIEnv *env, jclass clazz, const char *name, const char *sig); 
 ```
 
-返回类的静态域的域ID. 域由其名称和签名指定. GetStatic<type>Field和SetStatic<type>Field访问器函数系列使用域ID检索静态域. 
+返回类的静态域的域ID. 域由其名称和签名指定.`GetStatic<type>Field`和`SetStatic<type>Field`访问器函数系列使用域ID检索静态域. 
 
-GetStaticFieldID()将未初始化的类初始化. 
+`GetStaticFieldID`将未初始化的类初始化. 
 
 #### 关联
 JNIEnv接口函数表的项144
@@ -1925,17 +1926,17 @@ NoSuchFieldError:如果找不到指定的静态域.
 ExceptionInInitializerError:如果由于异常而导致类初始化程序失败. 
 OutOfMemoryError:如果系统内存不足. 
 
-### 4.9.2 GetStatic<type>Field例程
+### 4.9.2 `GetStatic<type>Field`例程
 
 ```
 NativeType GetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID); 
 ```
 
-该访问器例程系列返回对象的静态域的值. 要访问的域由通过调用GetStaticFieldID()而得到的域ID指定. 
+该访问器例程系列返回对象的静态域的值. 要访问的域由通过调用`GetStaticFieldID`而得到的域ID指定. 
 
-下表说明了GetStatic<type>Field例程名及结果类型. 应将GetStatic<type>Field中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
+下表说明了`GetStatic<type>Field`例程名及结果类型. 应将`GetStatic<type>Field`中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
 
-| **GetStatic<type>Field例程名** | **本地类型** |
+| **`GetStatic<type>Field`例程名** | **本地类型** |
 | ------------------------------ | ------------ |
 | GetStaticObjectField() | jobject |
 | GetStaticBooleanField() | jboolean |
@@ -1950,7 +1951,7 @@ NativeType GetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID);
 #### 关联
 JNIEnv接口函数表的项
 
-| **GetStatic<type>Field例程名** | **项** |
+| **`GetStatic<type>Field`例程名** | **项** |
 | ------------------------------ | ------ |
 | GetStaticObjectField() | 145 |
 | GetStaticBooleanField() | 146 |
@@ -1970,17 +1971,17 @@ fieldID:静态域ID.
 #### 返回值
 静态域的内容. 
 	
-### 4.9.3 SetStatic<type>Field例程
+### 4.9.3 `SetStatic<type>Field`例程
 
 ```
 void SetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID, NativeType value); 
 ```
 
-该访问器例程系列设置对象的静态域的值. 要访问的域由通过调用GetStaticFieldID()而得到的域ID指定.
+该访问器例程系列设置对象的静态域的值. 要访问的域由通过调用`GetStaticFieldID`而得到的域ID指定.
 
-下表说明了SetStatic<type>Field例程名及结果类型. 应将SetStatic<type>Field中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
+下表说明了`SetStatic<type>Field`例程名及结果类型. 应将`SetStatic<type>Field`中的type替换为域的Java类型（或使用表中的某个实际例程名）, 然后将NativeType替换为该例程对应的本地类型. 
 
-| **SetStatic<type>Field例程名** | **本地类型** |
+| **`SetStatic<type>Field`例程名** | **本地类型** |
 | ------------------------------ | ------------ |
 | SetStaticObjectField() | jobject |
 | SetStaticBooleanField() | jboolean |
@@ -1995,7 +1996,7 @@ void SetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID, NativeTyp
 #### 关联
 JNIEnv接口函数表的项
 
-| **SetStatic<type>Field例程名** | **项** |
+| **`SetStatic<type>Field`例程名** | **项** |
 | ------------------------------ | ------ |
 | SetStaticObjectField() | 154 |
 | SetStaticBooleanField() | 155 |
@@ -2023,7 +2024,7 @@ jmethodID GetStaticMethodID(JNIEnv *env, jclass clazz, const char *name, const c
 
 返回类的静态方法的方法ID. 方法由其名称和签名指定. 
 
-GetStaticMethodID()将未初始化的类初始化.
+`GetStaticMethodID`将未初始化的类初始化.
 
 #### 关联
 JNIEnv接口函数表的项113
@@ -2042,7 +2043,7 @@ NoSuchMethodError:如果找不到指定的静态方法.
 ExceptionInInitializerError:如果由于异常而导致类初始化程序失败. 
 OutOfMemoryError:如果系统内存不足. 
 
-### 4.10.2 CallStatic<type>Method, CallStatic<type>MethodA, CallStatic<type>MethodV 例程
+### 4.10.2 `CallStatic<type>Method`, `CallStatic<type>MethodA`, `CallStatic<type>MethodV`例程
 
 ```
 NativeType CallStatic<type>Method(JNIEnv *env, jclass clazz, jmethodID methodID, ...); 
@@ -2050,22 +2051,22 @@ NativeType CallStatic<type>MethodA(JNIEnv *env, jclass clazz, jmethodID methodID
 NativeType CallStatic<type>MethodV(JNIEnv *env, jclass clazz, jmethodID methodID, va_list args); 
 ```
 
-这些操作将根据指定的方法ID调用Java对象的静态方法. methodID参数必须通过调用GetStaticMethodID()得到.
+这些操作将根据指定的方法ID调用Java对象的静态方法. methodID参数必须通过调用`GetStaticMethodID`得到.
 
 方法ID必须从clazz派生, 而不能从其超类派生. 
 
-#### CallStatic<type>Method例程
-程序员应将要传给方法的所有参数紧跟着放在methodID参数之后. CallStatic<type>Method routine接受这些参数并将其传给程序员所要调用的Java方法. 
+#### `CallStatic<type>Method`例程
+程序员应将要传给方法的所有参数紧跟着放在methodID参数之后. CallStatic<type>Method 例程接受这些参数并将其传给程序员所要调用的Java方法. 
 
-#### CallStatic<type>MethodA例程
-程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. CallStaticMethodA routine接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
+#### `CallStatic<type>MethodA`例程
+程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的jvalues类型数组args中. `CallStaticMethodA`例程接受这些数组中的参数并将其传给程序员所要调用的Java方法. 
 
-#### CallStatic<type>MethodV例程
-程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的va_list类型参数args中. CallStaticMethodV routine接受这些参数并将其传给程序员所要调用的Java方法. 
+#### `CallStatic<type>MethodV`例程
+程序员应将要传给方法的所有参数放在紧跟在methodID参数之后的va_list类型参数args中. `CallStaticMethodV`例程接受这些参数并将其传给程序员所要调用的Java方法. 
 
-下表根据结果类型说明了各个方法调用例程. 用户应将CallStatic<type>Method中的type替换为所调用方法的Java类型（或使用表中的实际方法调用例程名）, 同时将NativeType替换为该例程相应的本地类型. 
+下表根据结果类型说明了各个方法调用例程. 用户应将`CallStatic<type>Method`中的type替换为所调用方法的Java类型（或使用表中的实际方法调用例程名）, 同时将NativeType替换为该例程相应的本地类型. 
 
-| **CallStatic<type>Method例程名** | **本地类型** |
+| **`CallStatic<type>Method例程名`** | **本地类型** |
 | -------------------------------- | ------------ |
 | CallStaticVoidMethod() CallStaticVoidMethodA() CallStaticVoidMethodV() | void |
 | CallStaticObjectMethod() CallStaticObjectMethodA() CallStaticObjectMethodV() | jobject |
@@ -2081,7 +2082,7 @@ NativeType CallStatic<type>MethodV(JNIEnv *env, jclass clazz, jmethodID methodID
 #### 关联
 JNIEnv接口函数表的项
 
-| **CallStatic<type>Method例程名** | **本地类型** |
+| **`CallStatic<type>Method`例程名** | **本地类型** |
 | -------------------------------- | ------------ |
 | CallStaticVoidMethod() CallStaticVoidMethodA() CallStaticVoidMethodV() | 141 143 142 |
 | CallStaticObjectMethod() CallStaticObjectMethodA() CallStaticObjectMethodV() | 114 116 115 |
@@ -2099,13 +2100,13 @@ env:JNI接口指针.
 clazz:Java类对象. 
 methodID:静态方法ID. 
 	
-#### CallStatic<type>Method例程的其它参数
+#### `CallStatic<type>Method`例程的其它参数
 要传给静态方法的参数. 
 	
-#### CallStatic<type>MethodA例程的其它参数
+#### `CallStatic<type>MethodA`例程的其它参数
 args:参数数组. 
 	
-#### CallStatic<type>MethodV例程的其它参数
+#### `CallStatic<type>MethodV`例程的其它参数
 args:参数的va_list. 
 	
 #### 返回值
@@ -2421,15 +2422,15 @@ value:新值.
 ArrayIndexOutOfBoundsException:如果index不是数组中的有效下标. 
 ArrayStoreException:如果value的类不是数组元素类的子类. 
 
-### 4.12.5 New<PrimitiveType>Array例程
+### 4.12.5 `New<PrimitiveType>Array`例程
 
 ```
 ArrayType New<PrimitiveType>Array(JNIEnv *env, jsize length); 
 ```
 
-用于构造新基本类型数组对象的一系列操作. 下表说明了特定的基本类型数组构造函数. 用户应把New<PrimitiveType>Array替换为某个实际的基本类型数组构造函数例程名（见下表）, 然后将ArrayType替换为该例程相应的数组类型. 
+用于构造新基本类型数组对象的一系列操作. 下表说明了特定的基本类型数组构造函数. 用户应把`New<PrimitiveType>Array`替换为某个实际的基本类型数组构造函数例程名（见下表）, 然后将ArrayType替换为该例程相应的数组类型. 
 	
-| **New<PrimitiveType>Array例程** | **数组类型** |
+| **`New<PrimitiveType>Array`例程** | **数组类型** |
 | ------------------------------- | ------------ |
 | NewBooleanArray() | jbooleanArray |
 | NewByteArray() | jbyteArray |
@@ -2443,7 +2444,7 @@ ArrayType New<PrimitiveType>Array(JNIEnv *env, jsize length);
 #### 关联
 JNIEnv接口函数表的项
 
-| **New<PrimitiveType>Array例程** | **项** |
+| **`New<PrimitiveType>Array`例程** | **项** |
 | ------------------------------- | ------ |
 | NewBooleanArray() | 175 |
 | NewByteArray() | 176 |
@@ -2461,26 +2462,26 @@ length:数组长度.
 #### 返回值
 Java数组. 如果无法构造该数组, 则为NULL. 
 
-### 4.12.6 Get<PrimitiveType>ArrayElements例程
+### 4.12.6 `Get<PrimitiveType>ArrayElements`例程
 
 ```
 NativeType *Get<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, jboolean *isCopy); 
 ```
 
-一组返回基本类型数组体的函数. 结果在调用相应的Release<PrimitiveType>ArrayElements()函数前将一直有效. 由于返回的数组
-可能是Java数组的副本, 因此对返回数组的更改不必在基本类型数组中反映出来, 直到调用了Release<PrimitiveType>ArrayElements().
+一组返回基本类型数组体的函数. 结果在调用相应的`Release<PrimitiveType>ArrayElements`函数前将一直有效. 由于返回的数组
+可能是Java数组的副本, 因此对返回数组的更改不必在基本类型数组中反映出来, 直到调用了`Release<PrimitiveType>ArrayElements`.
 
 如果isCopy不是NULL, *isCopy在复制完成后即被设为JNI_TRUE. 如果未复制, 则设为JNI_FALSE. 
 
 下表说明了特定的基本类型数组元素访问器. 应进行下列替换; 
 
-* 将Get<PrimitiveType>ArrayElements替换为表中某个实际的基本类型元素访问器例程名. 
+* 将`Get<PrimitiveType>ArrayElements`替换为表中某个实际的基本类型元素访问器例程名. 
 * 将ArrayType替换为对应的数组类型. 
 * 将NativeType替换为该例程对应的本地类型. 
 
-不管布尔数组在Java虚拟机中如何表示, GetBooleanArrayElements()将始终返回一个jboolean类型的指针, 其中每一字节代表一个元素（开包表示）. 所有其它类型的数组都确保在内存中是连续的. 
+不管布尔数组在Java虚拟机中如何表示, `GetBooleanArrayElements`将始终返回一个jboolean类型的指针, 其中每一字节代表一个元素（开包表示）. 所有其它类型的数组都确保在内存中是连续的. 
 
-| **Get<PrimitiveType>ArrayElements例程** | **数组类型** | **本地类型** |
+| **`Get<PrimitiveType>ArrayElements`例程** | **数组类型** | **本地类型** |
 | --------------------------------------- | ------------ | ------------ |
 | GetBooleanArrayElements() | jbooleanArray | jboolean |
 | GetByteArrayElements() | jbyteArray | jbyte |
@@ -2494,7 +2495,7 @@ NativeType *Get<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, jboole
 #### 关联
 JNIEnv接口函数表的项
 
-| **Get<PrimitiveType>ArrayElements例程** | **数组类型** |
+| **`Get<PrimitiveType>ArrayElements`例程** | **数组类型** |
 | --------------------------------------- | ------------ |
 | GetBooleanArrayElements() | 183 |
 | GetByteArrayElements() | 184 |
@@ -2513,13 +2514,13 @@ isCopy:指向布尔值的指针.
 #### 返回值
 返回指向数组元素的指针, 如果操作失败, 则为NULL. 
 	
-### 4.12.7 Release<PrimitiveType>ArrayElements例程
+### 4.12.7 `Release<PrimitiveType>ArrayElements`例程
 
 ```
 void Release<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, NativeType *elems, jint mode); 
 ```
 
-通知虚拟机本地代码无需再访问elems的一组函数. elems参数是一个通过使用对应的Get<PrimitiveType>ArrayElements()函数由array导出的指针. 必要时, 该函数将把对elems的修改复制回基本类型数组. 
+通知虚拟机本地代码无需再访问elems的一组函数. elems参数是一个通过使用对应的`Get<PrimitiveType>ArrayElements`函数由array导出的指针. 必要时, 该函数将把对elems的修改复制回基本类型数组. 
 
 mode参数将提供有关如何释放数组缓冲区的信息. 如果elems不是array中数组元素的副本, mode将无效. 否则, mode将具有下表所述的功能:
 
@@ -2532,11 +2533,11 @@ mode参数将提供有关如何释放数组缓冲区的信息. 如果elems不是
 多数情况下, 程序员将把“0”传给mode参数以确保固定的数组和复制的数组保持一致. 其它选项可以使程序员进一步控制内存管理, 但使用时务必慎重. 
 
 下表说明了构成基本类型数组撤消程序系列的特定例程. 应进行如下替换:
-* 将Release<PrimitiveType>ArrayElements 替换为下表中的某个实际基本类型数组撤消程序例程名. 
-* 将ArrayType替换为对应的数组类型. 
-* 将NativeType替换为该例程对应的本地类型. 
++ 将`Release<PrimitiveType>ArrayElements`替换为下表中的某个实际基本类型数组撤消程序例程名. 
++ 将ArrayType替换为对应的数组类型. 
++ 将NativeType替换为该例程对应的本地类型. 
 	
-| **Release<PrimitiveType>ArrayElements例程** | **数组类型** | **本地类型** |
+| **`Release<PrimitiveType>ArrayElements`例程** | **数组类型** | **本地类型** |
 | ------------------------------------------- | ------------ | ------------ |
 | ReleaseBooleanArrayElements() | jbooleanArray | jboolean |
 | ReleaseByteArrayElements() | jbyteArray | jbyte |
@@ -2550,7 +2551,7 @@ mode参数将提供有关如何释放数组缓冲区的信息. 如果elems不是
 #### 关联
 JNIEnv接口函数表的项
 
-| **Release<PrimitiveType>ArrayElements例程** | **项** |
+| **`Release<PrimitiveType>ArrayElements`例程** | **项** |
 | ------------------------------------------- | ------ |
 | ReleaseBooleanArrayElements() | 191 |
 | ReleaseByteArrayElements() | 192 |
@@ -2567,7 +2568,7 @@ array:Java数组对象.
 elems:指向数组元素的指针. 
 mode:释放模式. 
 	
-### 4.12.8 Get<PrimitiveType>ArrayRegion例程
+### 4.12.8 `Get<PrimitiveType>ArrayRegion`例程
 
 ```
 void Get<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, NativeType *buf); 
@@ -2576,11 +2577,11 @@ void Get<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, js
 将基本类型数组某一区域复制到缓冲区中的一组函数. 
 
 下表说明了特定的基本类型数组元素访问器. 应进行如下替换:
-* 将Get<PrimitiveType>ArrayRegion替换为表中的某个实际基本类型元素访问器例程名. 
-* 将 ArrayType 替换为对应的数组类型. 
-* 将 NativeType 替换为该例程对应的本地类型. 
++ 将`Get<PrimitiveType>ArrayRegion`替换为表中的某个实际基本类型元素访问器例程名. 
++ 将ArrayType替换为对应的数组类型. 
++ 将NativeType替换为该例程对应的本地类型. 
 	
-| **Get<PrimitiveType>ArrayRegion例程** | **数组类型** | **本地类型** |
+| **`Get<PrimitiveType>ArrayRegion`例程** | **数组类型** | **本地类型** |
 | ------------------------------------- | ------------ | ------------ |
 | GetBooleanArrayRegion() | jbooleanArray | jboolean |
 | GetByteArrayRegion() | jbyteArray | jbyte |
@@ -2594,7 +2595,7 @@ void Get<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, js
 #### 关联
 JNIEnv接口函数表的项
 
-| **Get<PrimitiveType>ArrayRegion例程** | **项** |
+| **`Get<PrimitiveType>ArrayRegion`例程** | **项** |
 | ------------------------------------- | ------ |
 | GetBooleanArrayRegion() | 199 |
 | GetByteArrayRegion() | 200 |
@@ -2615,7 +2616,7 @@ buf:目的缓冲区.
 #### 抛出
 ArrayIndexOutOfBoundsException:如果区域中的某个下标无效. 
 
-### 4.12.9 Set<PrimitiveType>ArrayRegion例程
+### 4.12.9 `Set<PrimitiveType>ArrayRegion`例程
 
 ```
 void Set<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, NativeType *buf); 
@@ -2624,11 +2625,11 @@ void Set<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, js
 将基本类型数组的某一区域从缓冲区中复制回来的一组函数.
 
 下表说明了特定的基本类型数组元素访问器. 应进行如下替换:
-* 将Set<PrimitiveType>ArrayRegion替换为表中的实际基本类型元素访问器例程名. 
+* 将`Set<PrimitiveType>ArrayRegion`替换为表中的实际基本类型元素访问器例程名. 
 * 将ArrayType替换为对应的数组类型. 
 * 将NativeType替换为该例程对应的本地类型. 	
 	
-| **Set<PrimitiveType>ArrayRegion例程** | **数组类型** | **本地类型** |
+| **`Set<PrimitiveType>ArrayRegion`例程** | **数组类型** | **本地类型** |
 | ------------------------------------- | ------------ | ------------ |
 | SetBooleanArrayRegion() | jbooleanArray | jboolean |
 | SetByteArrayRegion() | jbyteArray | jbyte |
@@ -2642,7 +2643,7 @@ void Set<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, js
 #### 关联
 JNIEnv接口函数表的项
 
-| **Set<PrimitiveType>ArrayRegion例程** | **项** |
+| **`Set<PrimitiveType>ArrayRegion`例程** | **项** |
 | ------------------------------------- | ------ |
 | SetBooleanArrayRegion() | 207 |
 | SetByteArrayRegion() | 208 |
@@ -2663,7 +2664,7 @@ buf:源缓冲区.
 #### 抛出
 ArrayIndexOutOfBoundsException:如果区域中的某个下标无效. 	
 
-**注意**: 在JDR/JRE 1.1中, 程序员能够使用Get/Release<primitivetype>ArrayElements函数来获取原始数组元素. 如果VM支持pinning, 则返回指向原始数据的指针;  否则, 返回一个副本.
+**注意**: 在JDR/JRE 1.1中, 程序员能够使用`Get/Release<primitivetype>ArrayElements`函数来获取原始数组元素. 如果VM支持pinning, 则返回指向原始数据的指针;  否则, 返回一个副本.
 
 在JDR/JRE 1.3中引入了新的函数, 允许本地方法在虚拟机不支持pinning情况下法获取数组元素.
 
@@ -2674,13 +2675,13 @@ void * GetPrimitiveArrayCritical(JNIEnv *env, jarray array, jboolean *isCopy);
 void ReleasePrimitiveArrayCritical(JNIEnv *env, jarray array, void *carray, jint mode); 
 ```
 
-这两个函数的语义和Get/Release<primitivetype>ArrayElements函数非常相近. 必要时, 虚拟机会返回原始数组的指针;  否则返回一个副本. **然而, 这些函数的使用仍然有显著的限制**.
+这两个函数的语义和`Get/Release<primitivetype>ArrayElements`函数非常相近. 必要时, 虚拟机会返回原始数组的指针;  否则返回一个副本. **然而, 这些函数的使用仍然有显著的限制**.
 
-在调用GetPrimitiveArrayCritical以后, 本地代码在调用ReleasePrimitiveArrayCritical之前不能运行一段较长的时间. 我们必须把这一对函数之间的代码当做运行在"临界区"之间. 在临界区内, 本地代码不能调用其他JNI函数, 或者任何可能导致当前线程阻塞并等待其他Java线程的系统调用. (例如, 当前线程不能读正在被其他Java线程写的流).
+在调用`GetPrimitiveArrayCritical`以后, 本地代码在调用`ReleasePrimitiveArrayCritical`之前不能运行一段较长的时间. 我们必须把这一对函数之间的代码当做运行在"临界区"之间. 在临界区内, 本地代码不能调用其他JNI函数, 或者任何可能导致当前线程阻塞并等待其他Java线程的系统调用. (例如, 当前线程不能读正在被其他Java线程写的流).
 
-这些限制很可能使得本地代码在虚拟机即使不支持pinning的情况下获取数组的非拷贝版. 例如, 当本地代码正持有通过GetPrimitiveArrayCritical获得的数组指针时, 虚拟机可能暂时取消垃圾回收.
+这些限制很可能使得本地代码在虚拟机即使不支持pinning的情况下获取数组的非拷贝版. 例如, 当本地代码正持有通过`GetPrimitiveArrayCritical`获得的数组指针时, 虚拟机可能暂时取消垃圾回收.
 
-多对GetPrimtiveArrayCritical和ReleasePrimitiveArrayCritical可能会嵌套. 例如:
+多对`GetPrimtiveArrayCritical`和`ReleasePrimitiveArrayCritical`可能会嵌套. 例如:
 
 ```
   jint len = (*env)->GetArrayLength(env, arr1); 
@@ -3350,7 +3351,9 @@ version: 期望的JNI版本.
 如果当前线程没有连接到虚拟机, 则设置`*env`为NULL, 同时返回`JNI_EDETACHED`. 如果指定的版本不支持, 则设置`*env`为NULL, 同时返回`JNI_EVERSION`. 否则, 设置`*env`为合适的接口, 同时返回`JNI_OK`.
 
 # 参考
+1. [NDK-JNI实战教程（二） JNI官方中文资料][1]
+2. [JNI本地接口(JNI)规范][2]
 
-1. [JNI本地接口(JNI)规范](http://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html)
-2. [NDK-JNI实战教程（二） JNI官方中文资料 ](http://yanbober.github.io/2015/02/16/android_studio_jni_2/)
+[1]: http://yanbober.github.io/2015/02/16/android_studio_jni_2/
+[2]: http://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html
 
