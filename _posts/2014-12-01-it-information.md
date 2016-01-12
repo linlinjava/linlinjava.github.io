@@ -20,9 +20,21 @@ description: 保存各种IT资讯网站
 
 [IT江湖](http://www.itjhwd.com/)
 
+[泡在网上的日子](http://www.jcodecraeer.com/)
+
 [伯乐在线](http://blog.jobbole.com/)
 
+[开发者头条](http://toutiao.io/)
+
 [IT博客牛人聚合](http://www.udpwork.com/)
+
+[安卓巴士](http://www.apkbus.com/)
+
+[第七城市](http://123.th7.cn/index.html)
+
+[23code](http://www.23code.com/)
+
+[爱范儿](http://www.ifanr.com/)
 
 [ITeye](http://www.iteye.com/)
 
