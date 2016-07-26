@@ -74,7 +74,7 @@ getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
 ## 2.1 View
 
-### 2.1.1 ID
+### 2.1.1 
 
 #### ID
 
@@ -92,43 +92,54 @@ android:id
 
 #### Position
 
-* setLeft(int), setRight(int), onSizeChanged(int, int, int, int)
-* getLeft(), getTop()
-* setRight(int), setBottom(int), onSizeChanged(int, int, int, int)
-* getRight(), getBottom()
-* setFrame(int, int, int, int)
-* onSizeChanged(int, int, int, int)
-
-#### Size
-
-* onMeasure(int, int), setMeasuredDimension(int, int), setMeasuredDimensionRaw(int, int), getMeasuredWidth(), getMeasuredHeight()
-* getMeasuredWidthAndState(), getMeasuredHeightAndState(), getMeasuredState()
+* setLeft(int), setRight(int), setRight(int), setBottom(int)
+* getLeft(), getTop(), getRight(), getBottom()
+* offsetLeftAndRight(int)
+* offsetTopAndBottom(int)
 * getWidth(), getHeight()
+
+通常`setLeft`, `setRight`, `setRight`, `setBottom`, `offsetLeftAndRight`, `offsetTopAndBottom`这几个方法不应该由用户所使用. 因为ViewGroup会基于每个View的LayoutParams和自身当前的情况(位置, 布局算法等)合理地布置View在ViewGroup中的位置. 而且ViewGroup设置的时候往往也是调用View的`layout`和`setFrame`方法.
+
+如果用户想要偏离当前的位置, 应该使用Transition相关的方法, 例如`setTranslationX`. 也就是说这些Transition相关的方法, 只是用在图像渲染, 而视图的位置大小等并没有改变.
+
+需要注意的是, 这里的`getXXX`方法必须在布局(如`layout`)结束以后才有效.
+
+#### MinimumSize
+
 * setMinimumWidth(int), getMinimumWidth()
 * setMinimumHeight(int), getMinimumHeight()
+* getSuggestedMinimumWidth(), getSuggestedMinimumHeight()
 
-#### XML属性
+```
+    protected int getSuggestedMinimumHeight() {
+        return (mBackground == null) ? mMinHeight : max(mMinHeight, mBackground.getMinimumHeight());
+    }
+
+    protected int getSuggestedMinimumWidth() {
+        return (mBackground == null) ? mMinWidth : max(mMinWidth, mBackground.getMinimumWidth());
+    }
+```
+
+View的默认长度和宽度.
+
+XML属性
 
 * android:minHeight
 * android:minWidth
 
 #### Padding
 
-* setHorizontalFadingEdgeEnabled(boolean), isHorizontalFadingEdgeEnabled()
-* setVerticalFadingEdgeEnabled(boolean), isVerticalFadingEdgeEnabled()
-
 * getTopFadingEdgeStrength(), getBottomFadingEdgeStrength(), getLeftFadingEdgeStrength(), getRightFadingEdgeStrength()
 
 * setPadding(int, int, int, int), setPaddingRelative(int, int, int, int)
 * getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom()
 * getPaddingStart(), getPaddingEnd()
-* isPaddingResolved(), resolvePadding(), resetResolvedPadding()
+* isPaddingResolved(), resolvePadding(), resetResolvedPadding(), resetPaddingToInitialValues()
 * recomputePadding()
 
-#### XML属性
+需要注意的是View类`Draw(Canvas)`方法中虽然
+XML属性
 
-* android:requiresFadingEdge
-* android:paddingEnd
 * android:padding
 * android:paddingLeft
 * android:paddingRight
@@ -136,16 +147,91 @@ android:id
 * android:paddingTop
 * android:paddingStart 
 * android:paddingEnd
+* android:requiresFadingEdge
 
-#### 方法
+#### PaddingOffset
 
 * isPaddingOffsetRequired()
 * getLeftPaddingOffset()
 * getRightPaddingOffset()
 * getTopPaddingOffset()
 * getBottomPaddingOffset()
-* getFadeTop(boolean)
-* getFadeHeight(boolean)
+
+在View类的`draw(Canvas)`方法中, 如果PaddingOffset是enabled, 那么padding变量会进一步变化. 但是需要注意的是, PaddingOffset并不会直接作用到内部padding的成员变量上, 而仅仅影响图像绘制的尺寸.
+
+#### Edge
+
+* setHorizontalFadingEdgeEnabled(boolean)
+* isHorizontalFadingEdgeEnabled()
+* setVerticalFadingEdgeEnabled(boolean)
+* isVerticalFadingEdgeEnabled()
+
+* initializeFadingEdge(TypedArray)
+* setFadingEdgeLength(int)
+* getHorizontalFadingEdgeLength()
+* getVerticalFadingEdgeLength()
+
+* getTopFadingEdgeStrength()
+* getBottomFadingEdgeStrength()
+* getLeftFadingEdgeStrength()
+* getRightFadingEdgeStrength()
+
+#### Scroll
+
+* setScrollX(int), getScrollX()
+* setScrollY(int), getScrollY()
+* scrollBy(int, int), scrollTo(int, int)
+* onScrollChanged(int, int, int, int)
+* setHorizontalScrollBarEnabled(boolean)
+* isHorizontalScrollBarEnabled()
+* setVerticalScrollBarEnabled(boolean)
+* isVerticalScrollBarEnabled()
+* isScrollbarFadingEnabled()
+* setScrollbarFadingEnabled(boolean)
+* setScrollBarStyle(int)
+* getScrollBarStyle()
+* getScrollBarSize()
+* setScrollBarSize(int)
+* setScrollBarFadeDuration(int)
+* getScrollBarFadeDuration()
+* setScrollBarDefaultDelayBeforeFade(int)
+* getScrollBarDefaultDelayBeforeFade()
+* setScrollBarFadeDuration(int)
+* getScrollBarFadeDuration()
+
+* initialAwakenScrollBars()
+* awakenScrollBars()
+* awakenScrollBars(int)
+* awakenScrollBars(int, boolean)
+
+* onDrawScrollBars(Canvas canvas)
+* computeHorizontalScrollRange()
+* computeHorizontalScrollOffset
+* computeHorizontalScrollExtent()
+* computeVerticalScrollRange()
+* computeVerticalScrollOffset()
+* computeVerticalScrollExtent()
+* canScrollHorizontally(int)
+* canScrollVertically(int)
+* isVerticalScrollBarHidden()
+* onDrawHorizontalScrollBar(Canvas, Drawable, int, int, int, int)
+* onDrawVerticalScrollBar(Canvas, Drawable, int, int, int, int)
+
+XML属性:
+
+* android:scrollX 
+* android:scrollY
+* android:scrollbarAlwaysDrawHorizontalTrack 
+* android:scrollbarAlwaysDrawVerticalTrack
+* android:scrollbarDefaultDelayBeforeFade
+* android:scrollbarFadeDuration 
+* android:scrollbarSize
+* android:scrollbarStyle
+* android:scrollbarThumbHorizontal
+* android:scrollbarThumbVertical
+* android:scrollbarTrackHorizontal
+* android:scrollbarTrackVertical
+* android:scrollbars
 
 #### Margin
 
@@ -219,7 +305,7 @@ View不直接支持, 但是其子类ViewGroup的支持, 见ViewGroup.MarginLayou
 * setTranslationZ(float)
 * getTranslationZ()
 
-#### XML属性
+XML属性
 
 * android:translationX
 * android:translationY
@@ -230,7 +316,7 @@ View不直接支持, 但是其子类ViewGroup的支持, 见ViewGroup.MarginLayou
 * setElevation(float)
 * getElevation()
 
-#### XML属性
+XML属性
 
 * android:elevation
 
@@ -240,31 +326,6 @@ View不直接支持, 但是其子类ViewGroup的支持, 见ViewGroup.MarginLayou
 * hasIdentityMatrix()
 * getInverseMatrix()
 
-#### Scroll
-
-* scrollBy(int, int), scrollTo(int, int), onScrollChanged(int, int, int, int)
-* setScrollX(int), getScrollX()
-* setScrollY(int), getScrollY()
-* isHorizontalScrollBarEnabled()
-* isVerticalScrollBarEnabled()
-* setHorizontalScrollBarEnabled(boolean)
-* setVerticalScrollBarEnabled(boolean)
-
-#### XML属性
-
-* android:scrollX 
-* android:scrollY
-* android:scrollbarAlwaysDrawHorizontalTrack 
-* android:scrollbarAlwaysDrawVerticalTrack
-* android:scrollbarDefaultDelayBeforeFade
-* android:scrollbarFadeDuration 
-* android:scrollbarSize
-* android:scrollbarStyle
-* android:scrollbarThumbHorizontal
-* android:scrollbarThumbVertical
-* android:scrollbarTrackHorizontal
-* android:scrollbarTrackVertical
-* android:scrollbars
 
 #### Visibility
 
@@ -272,7 +333,7 @@ View不直接支持, 但是其子类ViewGroup的支持, 见ViewGroup.MarginLayou
 * getVisibility()
 * isShown()
 
-#### XML属性
+XML属性
 
 android:visibility
 
@@ -283,7 +344,7 @@ android:visibility
 * setSaveFromParentEnabled(boolean)
 * isSaveFromParentEnabled()
 
-#### XML属性
+XML属性:
 
 * android:saveEnabled
 
@@ -294,7 +355,7 @@ android:visibility
 * isFocusable()
 * isFocusableInTouchMode()
 
-#### XML属性
+XML属性:
 
 * android:focusable
 * android:focusableInTouchMode 
@@ -306,20 +367,65 @@ android:visibility
 * isClickable()
 * isLongClickable()
 
-#### XML属性
+XML属性:
 
 * android:clickable
 * android:longClickable
 
-#### HapticFeedbackEnabled
+#### 触屏反馈
 
 * setHapticFeedbackEnabled(boolean)
 * isHapticFeedbackEnabled()
 * performHapticFeedback(int)
+* performHapticFeedback(int, int)
 
-#### XML属性
+`performHapticFeedback`第一个参数是:
+
+HapticFeedbackConstants.LONG_PRESS
+HapticFeedbackConstants.VIRTUAL_KEY
+HapticFeedbackConstants.KEYBOARD_TAP
+HapticFeedbackConstants.CLOCK_TICK
+HapticFeedbackConstants.CALENDAR_DATE
+
+`performHapticFeedback`第二个参数是:
+
+HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
+HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+
+XML属性:
 
 * android:hapticFeedbackEnabled
+
+需要注意的是: 系统的"触摸时振动"选项(或类似选项)必须预先设置, 否则无效.
+
+#### 声音反馈
+
+* setSoundEffectsEnabled(boolean)
+* isSoundEffectsEnabled()
+* playSoundEffect(int)
+
+`playSoundEffect`方法的第一个参数:
+
+SoundEffectConstants.CLICK
+SoundEffectConstants.NAVIGATION_LEFT
+SoundEffectConstants.NAVIGATION_UP
+SoundEffectConstants.NAVIGATION_RIGHT
+SoundEffectConstants.NAVIGATION_DOWN
+
+需要注意的是: 系统的"触摸提示音"选项(或类似选项)必须预先设置, 否则无效.
+
+XML属性:
+
+* android:soundEffectsEnabled
+
+#### 屏幕常亮
+
+* setKeepScreenOn(boolean)
+* getKeepScreenOn()
+
+XML属性:
+
+* android:keepScreenOn
 
 #### LayoutDirection
 
@@ -353,20 +459,25 @@ android:visibility
 * resetResolvedPadding()
 * resetResolvedDrawables()
 
-#### XML属性
+XML属性:
 
 * android:layoutDirection
 
+####
+
+* dispatchAttachedToWindow(AttachInfo, int)
+* onAttachedToWindow()
+* dispatchDetachedFromWindow()
+* onDetachedFromWindow()
+* hasWindowFocus()
+
+ViewRootImpl类的`performTraversals`方法中调用DecorView类的`dispatchAttachedToWindow`方法, 最终不断递归给视图树中View类.
+同理ViewRootImpl类的`dispatchDetachedFromWindow`方法最终不断递归给视图树中View类.
+
 #### WindowFocus
 
-* hasWindowFocus()
+* dispatchWindowFocusChanged(boolean)
 * onWindowFocusChanged(boolean)
-
-#### Seclected
-
-* setSelected(boolean)
-* isSelected()
-* dispatchSetSelected(boolean)
 
 #### Focus
 
@@ -380,7 +491,13 @@ android:visibility
 * onFocusChanged(boolean, int, Rect)
 * onFocusLost()
 
-isFocusable()和isFocused()的关系:
+这里的Focus是ViewFocus, 和上述的WindowFocus不同.
+
+#### Seclected
+
+* dispatchSetSelected(boolean)
+* setSelected(boolean)
+* isSelected()
 
 #### Enabled
 
@@ -401,6 +518,7 @@ isFocusable()和isFocused()的关系:
 
 #### Accelerated
 
+* isHardwareAccelerated()
 
 #### Hovered
 
@@ -411,7 +529,11 @@ isFocusable()和isFocused()的关系:
 
 #### Drag
 
+* dispatchDragEvent(DragEvent)
+* onDragEvent(DragEvent)
 * canAcceptDrag()
+
+* startDrag(ClipData, DragShadowBuilder, Object, int)
 
 ### 2.1.2 Layout
 
@@ -577,7 +699,7 @@ View类的`requestLayout`方法使得requestLayout请求在视图树中一直向
 * onAnimationStart()
 * onAnimationEnd()
 
-## 2.1.4 Event
+### 2.1.4 Event
 
 View(不包括子类ViewGroup)的事件处理框架如下所示:
 
@@ -845,93 +967,6 @@ View(不包括子类ViewGroup)的事件处理框架如下所示:
 
 ## 2.2 ViewGroup
 
-### 
-
-* getDescendantFocusability()
-* setDescendantFocusability(int)
-
-参数:
-
-FOCUS_BEFORE_DESCENDANTS
-FOCUS_AFTER_DESCENDANTS
-FOCUS_BLOCK_DESCENDANTS
-
-###
-
-* requestChildFocus(View, View)
-* focusableViewAvailable(View)
-* focusSearch(View, int)
-* clearChildFocus(View)
-* clearFocus()
-* getFocusedChild()
-* hasFocus()
-* findFocus()
-* hasFocusable()
-* addFocusables(ArrayList<View> views, int direction, int)
-* requestFocus(int direction, Rect)
-* onRequestFocusInDescendants(int, Rect)
-
-* setTouchscreenBlocksFocus(boolean)
-* getTouchscreenBlocksFocus()
-
-####
-
-* requestSendAccessibilityEvent(View, AccessibilityEvent)
-* onRequestSendAccessibilityEvent(View, AccessibilityEvent)
-
-####
-
-* findViewsWithText(ArrayList<View>, CharSequence, int)
-* findViewByAccessibilityIdTraversal(int)
-
-####
-
-*  dispatchWindowFocusChanged(boolean)
-
-####
-
-* addTouchables(ArrayList<View>)
-
-####
-
-* onChildVisibilityChanged(View, int, int)
-* dispatchVisibilityChanged(View, int)
-* dispatchWindowVisibilityChanged(int)
-
-
-####
-
-* dispatchWindowSystemUiVisiblityChanged(int)
-* dispatchSystemUiVisibilityChanged(int)
-* updateLocalSystemUiVisibility(int, int)
-
-####
-
-* dispatchDragEvent(DragEvent)
-* dispatchKeyEventPreIme(KeyEvent)
-* dispatchKeyEvent(KeyEvent)
-* dispatchKeyShortcutEvent(KeyEvent)
-* dispatchTrackballEvent(MotionEvent)
-* dispatchHoverEvent(MotionEvent)
-* onInterceptHoverEvent(MotionEvent)
-* dispatchGenericPointerEvent(MotionEvent)
-* dispatchGenericFocusedEvent(MotionEvent)
-* dispatchTouchEvent(MotionEvent)
-* onInterceptTouchEvent(MotionEvent)
-
-####
-
-* dispatchSaveInstanceState(SparseArray<Parcelable>)
-* dispatchFreezeSelfOnly(SparseArray<Parcelable>)
-* dispatchRestoreInstanceState(SparseArray<Parcelable>)
-* dispatchThawSelfOnly(SparseArray<Parcelable>)
-
-####
-
-* dispatchSetSelected(boolean)
-* dispatchSetActivated(boolean)
-* dispatchSetPressed(boolean)
-
 ### 2.2.1 Views
 
 #### Find
@@ -1002,127 +1037,435 @@ Activity类中用户通常使用`findViewById`方法来访问相应的View实例
     }
 ```
 
-####
+#### DisappearingView
 
-* removeDetachedView(View, boolean)
-* attachViewToParent(View, int, LayoutParams)
-* detachViewFromParent(View)
-* detachViewFromParent(int)
-* detachViewsFromParent(int, int)
-* detachAllViewsFromParent()
+* addDisappearingView(View)    私有方法
+* clearDisappearingChildren()
+
+ViewGroup类中存在两种孩子, 当前孩子mChildren和当前正在消失的孩子mDisappearingChildren. 当删除孩子的时候, 孩子并不一定马上删除. 因为有可能要执行消失时的动画操作, 因此这些孩子可能会先保存一段时间.
 
 ### 2.2.2 Draw
 
-####
+#### invalidate
 
 * invalidateChild(View, Rect)
 * invalidateChildInParent(int[], Rect)
 
-####
+这两个方法是ViewParent接口定义的, 而ViewGroup实现了这个接口. 通常这些方法是在View类的`invalidate`方法内部被调用.
 
-* damageChildDeferred(View)    系统隐藏
-* damageChild(View, Rect)    系统隐藏
-* damageChildInParent(int, int, Rect)    系统隐藏
-
-####
+#### measure
 
 * measureChildren(int, int)
 * measureChild(View, int, int)
 * measureChildWithMargins(View, int, int, int, int)
 * getChildMeasureSpec(int, int, int)
 
-####
-
-* layout(int, int, int, int)
-* onLayout(boolean, int, int, int, int)
+#### LayoutParams
 
 * generateLayoutParams(AttributeSet)
 * generateLayoutParams(LayoutParams)
 * generateDefaultLayoutParams()
 
-LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
+#### layout
 
-####
+* layout(int, int, int, int)
+* onLayout(boolean, int, int, int, int)
+
+
+```
+    @Override
+    public final void layout(int l, int t, int r, int b) {
+        if (!mSuppressLayout && (mTransition == null || !mTransition.isChangingLayout())) {
+            if (mTransition != null) {
+                mTransition.layoutChange(this);
+            }
+            super.layout(l, t, r, b);
+        } else {
+            // record the fact that we noop'd it; request layout when transition finishes
+            mLayoutCalledWhileSuppressed = true;
+        }
+    }
+
+    @Override
+    protected abstract void onLayout(boolean changed,
+            int l, int t, int r, int b);
+```
+
+#### update
+
+* updateViewLayout(View, LayoutParams)
+* checkLayoutParams(LayoutParams)
+
+#### offset
 
 * offsetDescendantRectToMyCoords(View, Rect)
 * offsetRectIntoDescendantCoords(View, Rect)
 * offsetChildrenTopAndBottom(int)    系统隐藏
 * offsetRectBetweenParentAndChild(View, Rect, boolean, boolean)
 
+#### Draw
+
+* dispatchDraw(Canvas)
+* getChildDrawingOrder(int, int)
+* drawChild(Canvas, View, long)
+
+虽然在View类的`draw(Canvas)`方法中的绘制顺序是:
+
+1. 绘制背景       drawBackground
+2. 绘制自身内容   onDraw
+3. 绘制孩子       dispatchDraw
+4. 绘制装饰       onDrawScrollBars, mOverlay.getOverlayView().dispatchDraw(canvas);
+
+但是个人感觉这里的(2)和(3)其实没有必要算这么清楚.
+既然ViewGroup类是特殊的View类, 也是容器类, 因此ViewGroup类只需要覆写`onDraw`方法, 并实现绘制内部孩子的逻辑即可, 而不需要额外的`dispatchDraw`方法.
+
+而ViewGroup的`dispatchDraw`方法的逻辑不仅仅是绘制孩子是:
+
+1. 绘制动画LayoutAnimation
+2. 绘制孩子
+3. 绘制正在消失的孩子
+
+绘制孩子和绘制正在消失孩子的方法是`drawChild`, 其代码:
+
+```
+class ViewGroup {
+    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        return child.draw(canvas, this, drawingTime);
+    }
+}
+```
+
+也就是说ViewGroup类的`drawChild(Canvas, View, long)`方法实质上是调用了View类的`drawChild(Canvas, ViewGroup, long)`方法. 个人觉得这里的设计是非常不合理的, View类既然是ViewGroup的父类 就不应该在View类中使用ViewGroup类, 而这里View类居然会使用ViewGroup的方法, 甚至直接访问ViewGroup类的成员变量:
+
+```
+class View {
+
+    boolean draw(Canvas canvas, ViewGroup parent, long drawingTime) {
+        boolean usingRenderNodeProperties = mAttachInfo != null && mAttachInfo.mHardwareAccelerated;
+        boolean more = false;
+        final boolean childHasIdentityMatrix = hasIdentityMatrix();
+        final int flags = parent.mGroupFlags;
+
+        if ((flags & ViewGroup.FLAG_CLEAR_TRANSFORMATION) == ViewGroup.FLAG_CLEAR_TRANSFORMATION) {
+            parent.getChildTransformation().clear();
+            parent.mGroupFlags &= ~ViewGroup.FLAG_CLEAR_TRANSFORMATION;
+        }
+...
+    }
+}
+```
+
+当然不仅仅在View类的`drawChild(Canvas, ViewGroup, long)`方法, View类中很多方法都是和ViewGroup类交互的. 因此个人感觉View和ViewGroup类这里的设计十分的奇怪.
+
 ####
 
-* getChildVisibleRect(View, Rect, Point)
+* bringChildToFront(View)
 
-####
+### 2.2.3 Animation & Animator
 
-* updateViewLayout(View, LayoutParams)
-* checkLayoutParams(LayoutParams)
+#### LayoutAnimation
+
+* setLayoutAnimation(LayoutAnimationController)
+* getLayoutAnimation()
+* startLayoutAnimation()
+* scheduleLayoutAnimation()
+* canAnimate()
+* onAnimationStart()
+* onAnimationEnd()
+* getLayoutAnimationListener()
+* setLayoutAnimationListener(AnimationListener)
+* attachLayoutAnimationParameters(View, LayoutParams, int, int)
+
+LayoutAnimation中LayoutAnimationController的启动是在ViewGroup类的`dispatchDraw`方法中.
+
 
 #### LayoutTransition
 
 * setLayoutTransition(LayoutTransition)
 * getLayoutTransition()
-
-`android.animation.LayoutTransition`类是管理ViewGroup类中布局变化时所使用Animator的容器.
-1. CHANGE_APPEARING: 由于在这个容器总新增加了一个view，而导致原来的view位置发
-2. CHANGE_DISAPPEARING: 由于在这个容器中移除了一个view，而导致原来的view位置发生改变所以会触发这个动画.
-3. APPEARING: 动画所运行的项目出现在这个容器中时，即：view显示时的动画
-生改变所以会触发这个动画。
-4. DISAPPEARING: view在这个容器中消失时触发的动画
-5. CHANGING: 
-
-
-
-####
-
-* attachLayoutAnimationParameters(View, LayoutParams, int, int)
-
-####
-
-* addDisappearingView(View)
-* clearDisappearingChildren()
-
-####
-
 * startViewTransition(View)
 * endViewTransition(View)
 
+`android.animation.LayoutTransition`类是管理ViewGroup类中布局变化时所使用Animator的容器. 
 
+这里的触发事件是: View添加, View删除, 以及其他布局事件. 而View可见属于View添加, View不可见属于View删除.
+
+这里的触发效果是:
+
+1. CHANGE_APPEARING: 添加View而导致其他View改变的动画.
+2. CHANGE_DISAPPEARING: 删除View而导致其他View改变的动画.
+3. APPEARING: 添加View而出现显示的动画
+4. DISAPPEARING: 删除View而出现消失的动画
+5. CHANGING: 除View添加和View删除以外的其他布局事件而出现的动画.
+
+此外, 默认的五种触发效果:
+
+```
+    public LayoutTransition() {
+        if (defaultChangeIn == null) {
+            // "left" is just a placeholder; we'll put real properties/values in when needed
+            PropertyValuesHolder pvhLeft = PropertyValuesHolder.ofInt("left", 0, 1);
+            PropertyValuesHolder pvhTop = PropertyValuesHolder.ofInt("top", 0, 1);
+            PropertyValuesHolder pvhRight = PropertyValuesHolder.ofInt("right", 0, 1);
+            PropertyValuesHolder pvhBottom = PropertyValuesHolder.ofInt("bottom", 0, 1);
+            PropertyValuesHolder pvhScrollX = PropertyValuesHolder.ofInt("scrollX", 0, 1);
+            PropertyValuesHolder pvhScrollY = PropertyValuesHolder.ofInt("scrollY", 0, 1);
+            defaultChangeIn = ObjectAnimator.ofPropertyValuesHolder((Object)null,
+                    pvhLeft, pvhTop, pvhRight, pvhBottom, pvhScrollX, pvhScrollY);
+            defaultChangeIn.setDuration(DEFAULT_DURATION);
+            defaultChangeIn.setStartDelay(mChangingAppearingDelay);
+            defaultChangeIn.setInterpolator(mChangingAppearingInterpolator);
+            defaultChangeOut = defaultChangeIn.clone();
+            defaultChangeOut.setStartDelay(mChangingDisappearingDelay);
+            defaultChangeOut.setInterpolator(mChangingDisappearingInterpolator);
+            defaultChange = defaultChangeIn.clone();
+            defaultChange.setStartDelay(mChangingDelay);
+            defaultChange.setInterpolator(mChangingInterpolator);
+
+            defaultFadeIn = ObjectAnimator.ofFloat(null, "alpha", 0f, 1f);
+            defaultFadeIn.setDuration(DEFAULT_DURATION);
+            defaultFadeIn.setStartDelay(mAppearingDelay);
+            defaultFadeIn.setInterpolator(mAppearingInterpolator);
+            defaultFadeOut = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f);
+            defaultFadeOut.setDuration(DEFAULT_DURATION);
+            defaultFadeOut.setStartDelay(mDisappearingDelay);
+            defaultFadeOut.setInterpolator(mDisappearingInterpolator);
+        }
+        mChangingAppearingAnim = defaultChangeIn;
+        mChangingDisappearingAnim = defaultChangeOut;
+        mChangingAnim = defaultChange;
+        mAppearingAnim = defaultFadeIn;
+        mDisappearingAnim = defaultFadeOut;
+    }
+```
 
 ####
 
-* onAttachedToWindow()
-* onDetachedFromWindow()
+* isTransitionGroup()
+* setTransitionGroup(boolean)
+
+### 2.2.4 Focus
 
 ####
 
-* onAnimationStart()
-* onAnimationEnd()
+* getDescendantFocusability()
+* setDescendantFocusability(int)
+
+参数:
+
+FOCUS_BEFORE_DESCENDANTS: ViewGroup自身先处理焦点, 如果没有处理则分发给孩子处理
+FOCUS_AFTER_DESCENDANTS: ViewGroup先分发给孩子处理, 如果没有处理则自身再处理
+FOCUS_BLOCK_DESCENDANTS: ViewGroup自身处理, 并且不会分发给孩子处理
+
+* requestFocus(int direction, Rect)
+* onRequestFocusInDescendants(int, Rect)
+
+```
+   public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+        if (DBG) {
+            System.out.println(this + " ViewGroup.requestFocus direction="
+                    + direction);
+        }
+        int descendantFocusability = getDescendantFocusability();
+
+        switch (descendantFocusability) {
+            case FOCUS_BLOCK_DESCENDANTS:
+                return super.requestFocus(direction, previouslyFocusedRect);
+            case FOCUS_BEFORE_DESCENDANTS: {
+                final boolean took = super.requestFocus(direction, previouslyFocusedRect);
+                return took ? took : onRequestFocusInDescendants(direction, previouslyFocusedRect);
+            }
+            case FOCUS_AFTER_DESCENDANTS: {
+                final boolean took = onRequestFocusInDescendants(direction, previouslyFocusedRect);
+                return took ? took : super.requestFocus(direction, previouslyFocusedRect);
+            }
+            default:
+                throw new IllegalStateException("descendant focusability must be "
+                        + "one of FOCUS_BEFORE_DESCENDANTS, FOCUS_AFTER_DESCENDANTS, FOCUS_BLOCK_DESCENDANTS "
+                        + "but is " + descendantFocusability);
+        }
+    }
+```
 
 ####
 
-* canAnimate()
-* startLayoutAnimation()
-* scheduleLayoutAnimation()
-* setLayoutAnimation(LayoutAnimationController)
-* getLayoutAnimation()
+* requestChildFocus(View, View)
+* clearChildFocus(View)
+
+`requestChildFocus`方法在ViewGroup类的`addViewInner`方法中被调用.
+
+```
+    private void addViewInner(View child, int index, LayoutParams params,
+            boolean preventRequestLayout) {
+        ...
+        if (child.hasFocus()) {
+            requestChildFocus(child, child.findFocus());
+        }
+        ...
+    }
+```
+####
+
+* focusableViewAvailable(View)
+
+通常这个方法是在View类的`setFocusableInTouchMode`中被调用.
+
+但是ViewGroup类中这个方法的逻辑仅仅是不断调用父类的相同方法, 没有做任何有意义的处理, 如下所示:
+
+```
+    public void focusableViewAvailable(View v) {
+        if (mParent != null
+                && (getDescendantFocusability() != FOCUS_BLOCK_DESCENDANTS)
+                && (isFocusableInTouchMode() || !shouldBlockFocusForTouchscreen())
+                && !(isFocused() && getDescendantFocusability() != FOCUS_AFTER_DESCENDANTS)) {
+            mParent.focusableViewAvailable(v);
+        }
+    }
+```
+
+实际上ViewGroup类中还有很多方法都是类似, 都是不断的向上遍历操作, 没有其他操作.
+
+这是因为ViewGroup类的mParent变量最终是DecorView类实例, 而DecorView类的mParent成员变量已经不是ViewGroup类的实例, 而是ViewRootImpl的实例. 因此一个普通的ViewGroup类的`focusableViewAvailable`最终会调用DecorView类的`focusableViewAvailable`方法, 继而调用ViewRootImpl类的`focusableViewAvailable`方法, 其代码如下所示:
+
+```
+    @Override
+    public void focusableViewAvailable(View v) {
+        checkThread();
+        if (mView != null) {
+            if (!mView.hasFocus()) {
+                v.requestFocus();
+            } else {
+                // the one case where will transfer focus away from the current one
+                // is if the current view is a view group that prefers to give focus
+                // to its children first AND the view is a descendant of it.
+                View focused = mView.findFocus();
+                if (focused instanceof ViewGroup) {
+                    ViewGroup group = (ViewGroup) focused;
+                    if (group.getDescendantFocusability() == ViewGroup.FOCUS_AFTER_DESCENDANTS
+                            && isViewDescendantOf(v, focused)) {
+                        v.requestFocus();
+                    }
+                }
+            }
+        }
+    }
+```
+
+也就是说ViewGroup类中继承ViewParent接口的一些方法, 最终是调用了ViewRootImpl的方法.
 
 ####
 
-* getLayoutAnimationListener()
-* setLayoutAnimationListener(AnimationListener)
+* focusSearch(View, int)
+
+第二个参数指明了查找的方向:
+
+FOCUS_UP
+FOCUS_DOWN
+FOCUS_LEFT
+FOCUS_RIGHT
+
+`focusSearch`的代码:
+
+```
+    public View focusSearch(View focused, int direction) {
+        if (isRootNamespace()) {
+            // root namespace means we should consider ourselves the top of the
+            // tree for focus searching; otherwise we could be focus searching
+            // into other tabs.  see LocalActivityManager and TabHost for more info
+            return FocusFinder.getInstance().findNextFocus(this, focused, direction);
+        } else if (mParent != null) {
+            return mParent.focusSearch(focused, direction);
+        }
+        return null;
+    }
+```
+
+逻辑通过底层父类来查找下一个应该获得焦点的View实例.
 
 ####
 
-* onStartNestedScroll(View child, View target, int)
-* onNestedScrollAccepted(View child, View target, int)
-* onStopNestedScroll(View)
-* onNestedScroll(View target, int dxConsumed, int dyConsumed,
-            int dxUnconsumed, int dyUnconsumed)
-* onNestedPreScroll(View target, int dx, int dy, int[])
-* onNestedFling(View target, float velocityX, float velocityY, boolean consumed)
-* onNestedPreFling(View target, float velocityX, float velocityY)
-* getNestedScrollAxes()
+* getFocusedChild()
+
+####
+
+* clearFocus()
+* hasFocus()
+* findFocus()
+
+View类的逻辑是当前是否获得焦点;
+ViewGroup类的逻辑是当前是否获得焦点, 或者是否包含获得焦点的孩子.
+
+####
+
+* hasFocusable()
+* addTouchables(ArrayList<View>)
+* addFocusables(ArrayList<View> views, int direction, int)
+
+####
+
+* setTouchscreenBlocksFocus(boolean)
+* getTouchscreenBlocksFocus()
+
+####
+
+* dispatchWindowFocusChanged(boolean)
+
+
+### 2.2.4 Input
+
+####
+
+* requestDisallowInterceptTouchEvent(boolean)
+
+####
+
+* setMotionEventSplittingEnabled(boolean)
+* isMotionEventSplittingEnabled()
+
+####
+
+* dispatchDragEvent(DragEvent)
+* dispatchKeyEventPreIme(KeyEvent)
+* dispatchKeyEvent(KeyEvent)
+* dispatchKeyShortcutEvent(KeyEvent)
+* dispatchTrackballEvent(MotionEvent)
+* dispatchHoverEvent(MotionEvent)
+* onInterceptHoverEvent(MotionEvent)
+* dispatchGenericPointerEvent(MotionEvent)
+* dispatchGenericFocusedEvent(MotionEvent)
+* dispatchTouchEvent(MotionEvent)
+* onInterceptTouchEvent(MotionEvent)
+
+####
+
+* dispatchSetSelected(boolean)
+* dispatchSetActivated(boolean)
+* dispatchSetPressed(boolean)
+
+####
+
+* onChildVisibilityChanged(View, int, int)
+* dispatchVisibilityChanged(View, int)
+* dispatchWindowVisibilityChanged(int)
+* getChildVisibleRect(View, Rect, Point)
+
+####
+
+* dispatchWindowSystemUiVisiblityChanged(int)
+* dispatchSystemUiVisibilityChanged(int)
+* updateLocalSystemUiVisibility(int, int)
+
+####
+
+* dispatchSaveInstanceState(SparseArray<Parcelable>)
+* dispatchFreezeSelfOnly(SparseArray<Parcelable>)
+* dispatchRestoreInstanceState(SparseArray<Parcelable>)
+* dispatchThawSelfOnly(SparseArray<Parcelable>)
+
+####
+
+* dispatchApplyWindowInsets(WindowInsets)
+
 ####
 
 * drawableStateChanged()
@@ -1132,6 +1475,36 @@ LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
 * setAddStatesFromChildren(boolean)
 * addStatesFromChildren()
 * childDrawableStateChanged(View)
+
+### 2.2.5 
+
+#### AccessibilityEvent
+
+* requestSendAccessibilityEvent(View, AccessibilityEvent)
+* onRequestSendAccessibilityEvent(View, AccessibilityEvent)
+* addChildrenForAccessibility(ArrayList<View>)
+
+####
+
+* removeDetachedView(View, boolean)
+* attachViewToParent(View, int, LayoutParams)
+* detachViewFromParent(View)
+* detachViewFromParent(int)
+* detachViewsFromParent(int, int)
+* detachAllViewsFromParent()
+
+非常奇怪的是这些方法, 并不是继承自父类View的, 因此没有被View所调用, 同时这些方法是protected型的, 因此也不能被其他类所调用. 因此这些方法似乎只能被子类所调用. 目前在GridView和ListView中所调用.
+
+####
+
+* onStartNestedScroll(View, View, int)
+* onNestedScrollAccepted(View, View, int)
+* onStopNestedScroll(View)
+* onNestedScroll(View, int, int, int, int)
+* onNestedPreScroll(View, int, int, int[])
+* onNestedFling(View, float, float, boolean)
+* onNestedPreFling(View, float, float)
+* getNestedScrollAxes()
 
 ####
 
@@ -1143,6 +1516,7 @@ LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
 * isChildrenDrawnWithCacheEnabled()
 * setChildrenDrawingOrderEnabled(boolean)
 * isChildrenDrawingOrderEnabled()
+* setChildrenDrawingCacheEnabled(boolean)
 
 ####
 
@@ -1159,14 +1533,9 @@ PERSISTENT_ALL_CACHES
 * setLayoutMode(int)
 * getLayoutMode()
 
+LAYOUT_MODE_UNDEFINED
 LAYOUT_MODE_CLIP_BOUNDS
 LAYOUT_MODE_OPTICAL_BOUNDS
-
-####
-
-* dispatchDraw(Canvas)
-* getChildDrawingOrder(int, int)
-* drawChild(Canvas, View, long)
 
 ####
 
@@ -1175,26 +1544,16 @@ LAYOUT_MODE_OPTICAL_BOUNDS
 * setClipToPadding(boolean)
 * getClipToPadding()
 
-
-####
+#### Overlay
 
 * getOverlay()
 
 ####
 
-* bringChildToFront(View)
-* addChildrenForAccessibility(ArrayList<View>)
-* isTransformedTouchPointInView(float, float, View, PointF)
-* setMotionEventSplittingEnabled(boolean)
-* isMotionEventSplittingEnabled()
-* isTransitionGroup()
-* requestDisallowInterceptTouchEvent(boolean)
-* setChildrenDrawingCacheEnabled(boolean)
 * gatherTransparentRegion(Region)
 * requestTransparentRegion(View)
-* dispatchApplyWindowInsets(WindowInsets)
 
-### 2.2. 子类
+### 2.2.6 子类
 
 直接子类:
 
@@ -1274,6 +1633,163 @@ ViewFlipper
 ViewSwitcher
 WebView
 ZoomControls
+
+### 2.3 ViewRootImpl
+
+`android.view.ViewRootImpl`类, 这个类实现了`android.view.ViewParent`接口, 但是ViewRootImpl类却是**系统隐藏**的.
+
+```
+public interface ViewParent {
+
+    public void requestLayout();
+    public boolean isLayoutRequested();
+    public void requestTransparentRegion(View child);
+    public void invalidateChild(View child, Rect r);
+    public ViewParent invalidateChildInParent(int[] location, Rect r);
+    public ViewParent getParent();
+    public void requestChildFocus(View child, View focused);
+    public void recomputeViewAttributes(View child);
+    public void clearChildFocus(View child);
+    public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset);
+    public View focusSearch(View v, int direction);
+    public void bringChildToFront(View child);
+    public void focusableViewAvailable(View v);
+    public boolean showContextMenuForChild(View originalView);
+    public void createContextMenu(ContextMenu menu);
+    public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback);
+    public void childDrawableStateChanged(View child);
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept);
+    public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate);
+    public boolean requestSendAccessibilityEvent(View child, AccessibilityEvent event);
+    public void childHasTransientStateChanged(View child, boolean hasTransientState);
+    public void requestFitSystemWindows();
+    public ViewParent getParentForAccessibility();
+    public void notifySubtreeAccessibilityStateChanged(View child, View source, int changeType);
+    public boolean canResolveLayoutDirection();
+    public boolean isLayoutDirectionResolved();
+    public int getLayoutDirection();
+    public boolean canResolveTextDirection();
+    public boolean isTextDirectionResolved();
+    public int getTextDirection();
+    public boolean canResolveTextAlignment();
+    public boolean isTextAlignmentResolved();
+    public int getTextAlignment();
+    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes);
+    public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes);
+    public void onStopNestedScroll(View target);
+    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed);
+    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed);
+    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed);
+    public boolean onNestedPreFling(View target, float velocityX, float velocityY);
+```
+
+首先View类没有实现ViewParent接口, 但是内部存在一个ViewParent接口类型的成员变量mParent; 其次ViewGroup类实现了ViewParent接口, 同时由于继承自View类, 隐藏ViewGroup内部也存在一个ViewParent接口类型的内部变量mParent; 最后RootViewImpl类实现了ViewParent接口, 但是内部没有保存ViewParent接口类型的内部变量.
+
+一个普通的View的mParent成员变量, 实际上指向的是包含这个View的容器ViewGroup; 而一个普通的ViewGroup的mParent成员变量, 实际上指向的是更高一层的容器ViewGroup; 而最终最高层ViewGroup, 也就是特殊的DecorView, 其mParent成员变量, 实际上指向的则是RootViewImpl类.
+
+因此很多View或ViewGroup的功能会在视图树中不断上溯, 最终由RootViewImpl类实现.
+
+## 2.4 Custom View
+
+## 2.5 Custom ViewGroup
+
+### Create
+
+* Constructors
+* onFinishInflate()
+
+### Layout
+
+* onMeasure(int, int)
+* onLayout(boolean, int, int, int, int)
+* onSizeChanged(int, int, int, int)
+
+### Draw
+
+* onDraw(Canvas)
+
+### Input
+
+* onKeyDown(int, KeyEvent)
+* onKeyUp(int, KeyEvent)
+* onTrackballEvent(MotionEvent)
+* onTouchEvent(MotionEvent)
+
+### Focus
+
+* onFocusChanged(boolean, int, Rect)
+* onWindowFocusChanged(boolean)
+
+### Attach
+
+* onAttachedToWindow()
+* onDetachedFromWindow()
+* onWindowVisibilityChanged(int)
+
+### 2.6 完美的框架
+ 
+个人感觉View和ViewGroup的设计应该是成功的, 但是同时应该还有瑕疵, 有些地方理解起来比较绕.
+当然这里的"瑕疵"有可能是不得已为之, 有可能是失误, 也有可能是精髓, 而本人水平还不能意会.
+
+**如何设计一个完美的框架**
+
+1. 完美的框架, 或者说框架的核心部分, 应该面向三种角色, 框架设计者, 框架扩展者, 框架使用者. 这三种角色可能是一人, 多人, 多组织的.
+一些方法是面向框架设计者的, 如final方法, 其他人是不能修改的. 有些方法虽然不是final的, 例如View类中的`dispatchXXX`, 理论上允许其他人覆写或者调用, 但是其实不应该覆写, 甚至也不应该使用, 因为这些方法可能存在于一些上下文中, 如果理解不深刻而贸然使用, 有可能会造成框架运行不稳定, 也可能会造成框架的逻辑结构不合理. 
+一些方法是面向框架扩展者的, 如View类中的很多`onXXX`, 这些方法通常框架核心类中并没有具体的实现, 甚至是abstract的, 因此框架扩展者通常需要继承核心类, 覆写`onXXX`方法, 从而进一步扩展一些通用的功能.
+一些方法是面向框架使用者的, 这里的框架使用者仍然是编程人员, 而不是最终普通用户, 如View类中的`setXXX`, 这些方法通常已经存在了一定的逻辑, 因此框架使用者通常应该实例化一个类, 调用相应的方法, 从而使用框架的服务.
+2. 然而, 实际上这三种之间并不是绝对独立的, 或者说可能不可能达到的. 这也带来了利和弊.
+首先, 一些方法并不是final的, 例如View类中的`dispatchXXX`, 因此有些框架设计者或者框架扩展者会选择直接覆写这些方法, 然而实际上这些方法存在一些相应的`onXXX`方法, 旨在用于覆写, 但是最终却没有被覆写. 这种现象是因为`onXXX`方法往往权限较小, 能够处理的范围较小, 因此框架设计者或者框架扩展者直接覆写了那些`dispatchXXX`方法, 这样做不能说是错误的, 但是个人感觉这样做似乎不妥. 当然如果扩大`onXXX`方法的权限, 如`onXXX`方法在`dispatchXXX`方法中首先被调用再做其他逻辑, 这样虽然可以鼓励设计者和扩展者覆写`onXXX`方法, 但是这样似乎也不妥, 毕竟`onXXX`的权限太大了, 对于框架本身的影响较大.
+
+```
+
+	public class Architecture {
+		public final void dispatchXXX() {
+			onXXX();
+			...
+			notifyListeners();
+		}
+
+		protected boolean onXXX() {
+			return false;
+		}
+
+		private void notifyListeners() {
+			for (Listener listener : mListeners} {
+				listener.doXXX();	
+			}
+		}
+
+		public void setXXXEnabled(boolean b) {
+			mXXXEnabled = b;
+			...
+		}
+
+		public boolean isXXXEnabled() {
+			return mXXXEnabled;
+		}
+
+		public void setXXX(int i) {
+			mXXX = i;		
+		}
+		
+		public int getXXX () {
+			return mXXX;
+		}
+
+		public interface Listener {
+			void doXXX();	
+		}
+
+		public void addListener(Listener listener) {
+			mListeners.add(listener);	
+		}
+	}
+```
+
+3. 如何处理框架中的核心类之间的继承关系.
+子类可以覆写父类的一些方法, 而覆写方法时可以选择调用父类相同方法, 也可以选择不调用父类相同方法.
+
+例如View类和ViewGroup类, 
 
 # 3 Graphics
 
@@ -6174,6 +6690,7 @@ inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.u
 7. [Skia官网][7]
 8. [Skia源码][8]
 9. [Material Design][9]
+10. [aweandroid-open-project][11]
 
 [1]: http://developer.android.com/guide/topics/ui/overview.html
 [2]: http://developer.android.com/guide/topics/graphics/index.html
@@ -6184,3 +6701,5 @@ inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.u
 [7]: https://skia.org/
 [8]: https://github.com/google/skia/
 [9]: http://www.google.com/design/spec/material-design/introduction.html
+[10]: https://github.com/wasabeef/awesome-android-ui
+[11]: https://github.com/Trinea/android-open-project
