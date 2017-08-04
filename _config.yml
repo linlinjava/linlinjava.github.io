@@ -1,0 +1,40 @@
+#
+###################################
+# Site wide configuration
+####################################
+#
+title: linlinjava
+email: linlinjavaer@gmail.com
+description: Personal Blog for Thinking, Learning & Coding.
+url: https://linlinjava.github.io/
+
+
+#
+###################################
+# Jekyll configuration
+####################################
+#
+markdown:          kramdown
+highlighter:       rouge
+excerpt_separator: <!--more-->
+permalink:         /articles/:year-:month/:title
+
+kramdown:
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  enable_coderay: false
+
+#
+###################################
+# Site Owner configuration
+####################################
+#
+owner:
+  name: linlinjava
+  avatar: favicon.gif
+  job: "Java & Android Developer"
+  bio: "Thinking, Learning & Coding"
+  email: linlinjavaer@gmail.com
+  github: linlinjava
